@@ -50,15 +50,15 @@ const loginSlice = createSlice({
 
       // Default header for auth
 
-      axios.defaults.headers.common["Authorization"] =
-        action.payload.data.accessToken;
+      // axios.defaults.headers.common["Authorization"] =
+      //   action.payload.data.accessToken;
 
-      localStorage.setItem(
-        LS_AUTHTOKEN,
-        JSON.stringify(action.payload.data.accessToken)
-      );
+      // localStorage.setItem(
+      //   LS_AUTHTOKEN,
+      //   JSON.stringify(action.payload.data.accessToken)
+      // );
 
-      localStorage.setItem(LS_USER, JSON.stringify(action.payload.data));
+      // localStorage.setItem(LS_USER, JSON.stringify(action.payload.data));
 
       state.userData = action.payload;
       state.isLoggedIn = true;

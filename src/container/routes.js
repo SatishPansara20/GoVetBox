@@ -2,7 +2,7 @@ import React, { lazy } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 import AuthGuard from "../components/auth";
 
-const Layout = lazy(() => import("../components/layout"));
+const Layout = lazy(() => import("../components/layout/index"));
 const SignIn = lazy(() => import("../pages/SignIn/index"));
 const ForgotPassword = lazy(() => import("../components/auth/ForgotPassword"));
 const Dashboard = lazy(() => import("../pages/Dashboard"));
