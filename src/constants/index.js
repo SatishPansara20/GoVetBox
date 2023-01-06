@@ -22,6 +22,9 @@ export const API_LOGIN = `auth/login`;
 export const API_USER_LIST = `admin/userList`;
 export const API_USER_INFO = `admin/userInfo`;
 
+// APP URLS
+export const FORGOT_PASSWORD = `http://202.131.117.92:7155/admin_v1/auth/forgotPassword`;
+
 //NOTE: URL
 
 // UI
@@ -29,11 +32,10 @@ export const API_USER_INFO = `admin/userInfo`;
 // admin.gvb@yopmail.com
 // 123456
 
-// postman link 
+// postman link
 // https://api.postman.com/collections/10507983-98316dce-12c9-4821-af69-60ef84f288d2?access_key=PMAT-01GP081M2VYJ46E5QBECXY26C5
-
 
 // https://api.postman.com/collections/10507983-98316dce-12c9-4821-af69-60ef84f288d2?access_key=PMAT-01GP081M2VYJ46E5QBECXY26C5
 // https://api.postman.com
 // REACT_APP_API_BASE=http://202.131.117.92:7155/admin_v1/
-// REACT_APP_IMAGE_BASE=http://202.131.117.92:7155/uploads/            
+// REACT_APP_IMAGE_BASE=http://202.131.117.92:7155/uploads/

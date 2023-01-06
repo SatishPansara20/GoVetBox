@@ -12,12 +12,13 @@ const SignIn = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const [loadings, setLoadings] = useState([]);
   const [userEP, setUserEP] = useState({
     email: "admin.gvb@yopmail.com",
     password: "123456",
     remember: true,
   });
+
+  const [loadings, setLoadings] = useState([]);
 
   const enterLoading = (index) => {
     setLoadings((prevLoadings) => {

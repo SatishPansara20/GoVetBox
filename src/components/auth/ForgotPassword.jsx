@@ -1,56 +1,67 @@
 import React from "react";
+import { useState } from "react";
 import axios from "axios";
 import { UserOutlined } from "@ant-design/icons";
-import { Button, Input, Alert, Form } from "antd";
+import { Button, Input, notification, Form } from "antd";
+
+import { FORGOT_PASSWORD } from "../../constants/index";
 
 const ForgotPassword = () => {
-  const [email, setEmail] = React.useState("admin.gvb@yopmail.com");
+  const [api, contextHolder] = notification.useNotification();
 
-  const [alertData, setAlertData] = React.useState({
-    type: "",
-    message: "",
-    description: "",
-  });
+  const [email, setEmail] = useState("");
 
-  const alterBox = (
-    <Alert
-    className="absolute top-0 left-0 z-50 flex items-center justify-center"
-      type="success"
-      message="Success"
-      description={alertData.description}
-      showIcon
-    />
-  );
+  //NOTE: Notifications Banner
+  const openNotificationWithIcon = (notificationData) => {
+    console.log(notificationData);
+    if (notificationData.type !== "") {
+      api[notificationData.type]({
+        message: notificationData.message,
+        description: notificationData.description || notificationData.message,
+      });
+    }
+  };
 
-  const onFinish = (values) => {
-    console.log(values);
+  //NOTE: Handleing password reset url and notification
 
-    //Axios login
-
-    axios
-      .post("http://202.131.117.92:7155/admin_v1/auth/forgotPassword", {
+  const sentPasswordRestLink = async (values) => {
+    try {
+      const response = await axios.post(FORGOT_PASSWORD, {
         email: values.email,
-      })
-      .then((res) => {
-        if (res.data.status === 200) {
-         
-        
-          setAlertData({
-            type: "success",
-            message: "Success",
-            description: res.data.message,
-          });
-        } else {
-          setAlertData({
+      });
+      console.log(response.data);
+
+      if (response.data.status === 200) {
+        openNotificationWithIcon({
+          type: "success",
+          message: "Success",
+          description: response.data.message,
+        });
+      }
+    } catch (error) {
+      console.log(error.response);
+      if (error.response) {
+        if (error.response.data.status === 400) {
+          openNotificationWithIcon({
             type: "warning",
             message: "Warning",
-            description: res.data.message,
+            description: error.response.data.message,
           });
         }
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+      } else if (error.request) {
+        console.log(
+          `The request was made but not received proper response and The response received is  : ${error.request}`
+        );
+      } else {
+        console.log(
+          `Something happened in setting up the request that triggered an Error as Didn't recevied any response and Error Messages is : ${error.message} `
+        );
+      }
+    }
+  };
+
+  const onFinish = (values) => {
+    sentPasswordRestLink(values);
   };
 
   const onFinishFailed = (errorInfo) => {
@@ -59,12 +70,12 @@ const ForgotPassword = () => {
 
   return (
     <>
-      <section className="h-screen w-screen bg-slate-200 relative">
-         
-          {alterBox}
-        
-
-        <div className="bg-white flex h-full justify-center items-center shadow-lg">
+      <section className="h-screen w-screen flex justify-center items-center bg-neutral-200 relative">
+        {contextHolder}
+        <div className="bg-white flex flex-col h-fit w-fit rounded-md justify-center items-center shadow-lg">
+          <p className="text-xl text-center p-4 uppercase text-black">
+            Forget Password
+          </p>
           <Form
             name="basic"
             className="login-form shadow-md p-4"
@@ -75,6 +86,7 @@ const ForgotPassword = () => {
             onFinishFailed={onFinishFailed}
             autoComplete="off"
           >
+            
             <Form.Item
               label="Email"
               name="email"
@@ -118,4 +130,3 @@ const ForgotPassword = () => {
 };
 
 export default ForgotPassword;
-
