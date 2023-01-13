@@ -14,6 +14,7 @@ const initialState = {
 
   // Auth Data
   isLoggedIn: false,
+  token: null,
   userData: {},
 };
 
@@ -46,21 +47,20 @@ const loginSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder.addCase(LOGIN_S, (state, action) => {
-      console.log(action.payload);
-
       // Default header for auth
 
-      // axios.defaults.headers.common["Authorization"] =
-      //   action.payload.data.accessToken;
+      axios.defaults.headers.common["Authorization"] =
+        action.payload.data.accessToken;
 
-      // localStorage.setItem(
-      //   LS_AUTHTOKEN,
-      //   JSON.stringify(action.payload.data.accessToken)
-      // );
+      localStorage.setItem(
+        LS_AUTHTOKEN,
+        JSON.stringify(action.payload.data.accessToken)
+      );
 
-      // localStorage.setItem(LS_USER, JSON.stringify(action.payload.data));
+      localStorage.setItem(LS_USER, JSON.stringify(action.payload.data));
 
       state.userData = action.payload;
+      state.token = action.payload.data.accessToken;
       state.isLoggedIn = true;
     });
     builder.addCase(LOGIN_F, (state, action) => {

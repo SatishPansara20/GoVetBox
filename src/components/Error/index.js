@@ -1,5 +1,8 @@
 import React from "react";
 import "./error.scss";
+
+import { LS_AUTHTOKEN, LS_USER } from "../../constants/index";
+
 export class ErrorBoundary extends React.Component {
   constructor(props) {
     super(props);
@@ -10,6 +13,8 @@ export class ErrorBoundary extends React.Component {
     return { hasError: true };
   }
   componentDidCatch(error, info) {
+    localStorage.removeItem(LS_AUTHTOKEN);
+    localStorage.removeItem(LS_USER);
     // It will catch error in any component below. We can also log the error to an error reporting service.
     console.log("error : ", error);
   }

@@ -43,7 +43,7 @@ const SignIn = () => {
   };
 
   const onFinish = (values) => {
-    console.log(userEP, values);
+    //console.log(userEP, values);
     //Axios login
 
     dispatch(loginAction(values))

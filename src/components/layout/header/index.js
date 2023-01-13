@@ -1,78 +1,53 @@
 import React from "react";
+import { useParams } from "react-router-dom";
 
-import { useDispatch } from "react-redux";
-import { LOGIN_F } from "../../../constants";
+import { useLocation, Link } from "react-router-dom";
+import { Breadcrumb } from "antd";
 
-import { Button, Dropdown, Avatar } from "antd";
-import { UserOutlined } from "@ant-design/icons";
-// import { Breadcrumb } from "antd";
-
+let pathNames = [];
 const PageHeader = () => {
-  const dispatch = useDispatch();
+  const location = useLocation();
+  const { id } = useParams();
+  const { pathname } = location;
+  const pathNames_1 = pathname.split("/").filter((name) => name);
 
-  const onLogout = () => {
-    dispatch({ type: LOGIN_F });
-  };
-
-  const items = [
-    {
-      key: "1",
-      label: (
-        <Button type="button" onClick={onLogout}>
-          Logout
-        </Button>
-      ),
-    },
-  ];
+  if (pathNames_1.includes(id)) {
+    pathNames = pathNames_1.filter((name) => name !== id);
+  } else {
+    pathNames = pathNames_1;
+  }
 
   return (
     <>
-      <div className="justify-self-center">
-        <Dropdown
-          menu={{
-            items,
-          }}
-          placement="bottomRight"
-        >
-          <Avatar className="bg-black m-2 " size="large" icon={<UserOutlined />} />
-        </Dropdown>
+      <div className="">
+        <nav>
+          <div className="bg-white z-10 w-full p-4 shadow-md sticky top-0 left-0 right-0">
+            <Breadcrumb className="text-blue-400">
+              {pathNames.length > 0 ? (
+                <Breadcrumb.Item>
+                  <Link to="/dashboard">Home</Link>
+                </Breadcrumb.Item>
+              ) : (
+                <Breadcrumb.Item>Home</Breadcrumb.Item>
+              )}
+              {pathNames.map((name, i) => {
+                const routeTo = `/${pathNames.slice(0, i + 1).join("/")}`;
+                const isLast = i === pathNames.length - 1;
+
+                return isLast ? (
+                  <Breadcrumb.Item key={i}>{name}</Breadcrumb.Item>
+                ) : (
+                  <Breadcrumb.Item>
+                    <Link to={`${routeTo}`}>{name}</Link>
+                  </Breadcrumb.Item>
+                );
+              })}
+            </Breadcrumb>
+          </div>
+        </nav>
       </div>
-      {/* <div className="  w-full p-4 mb-3 shadow-md">
-          <Breadcrumb className="text-blue-400 bg-white">
-            <Breadcrumb.Item>Home</Breadcrumb.Item>
-            <Breadcrumb.Item>List</Breadcrumb.Item>
-            <Breadcrumb.Item>App</Breadcrumb.Item>
-          </Breadcrumb>
-        </div> */}
     </>
   );
 };
 
 export default PageHeader;
-
-// const [visible, setVisible] = useState(false);
-
-// {/* <Drawer
-//     title="Topics"
-//     placement="left"
-//     onClick={() => setVisible(false)}
-//     onClose={() => setVisible(false)}
-//     open={visible}
-//   ></Drawer>
-//   <Button
-//     className="menu"
-//     type="primary"
-//     icon={<MenuOutlined />}
-//     onClick={() => setVisible(true)}
-//   /> */}
-
-//  {/* <div className="justify-end-start">
-//     <Dropdown
-//       menu={{
-//         items,
-//       }}
-//       placement="bottomRight"
-//     >
-//       <Avatar size={64} icon={<UserOutlined />} />
-//     </Dropdown>
-//   </div> */}
