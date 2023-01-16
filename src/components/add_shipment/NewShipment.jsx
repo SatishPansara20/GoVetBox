@@ -6,13 +6,18 @@ import {
   useGetApprovedPatientListMutation,
   useGetPatientAddressURLMutation,
   useGetAllMedicationURLMutation,
+  useAddShipmentMutation
 } from "../../Redux/ReduxApi";
 import { Button, DatePicker, Form, Input, Select } from "antd";
-import dayjs from "dayjs";
-import customParseFormat from "dayjs/plugin/customParseFormat";
-dayjs.extend(customParseFormat);
 
-const dateFormatList = ["DD/MM/YYYY", "DD/MM/YY"];
+import dayjs from "dayjs";
+import timezone from "dayjs/plugin/timezone";
+import utc from "dayjs/plugin/utc";
+dayjs.extend(utc);
+dayjs.extend(timezone);
+dayjs.tz.setDefault("Asia/Kolkata");
+
+const dateFormate = "MM/DD/YYYY";
 
 let patientNames = [];
 
@@ -20,6 +25,7 @@ const NewShipment = () => {
   const [approvedPatientList] = useGetApprovedPatientListMutation();
   const [PatientAddress] = useGetPatientAddressURLMutation();
   const [AllMedication] = useGetAllMedicationURLMutation();
+  const [addShipment] = useAddShipmentMutation();
 
   const [apList, setAPList] = useState([]);
   const [pad, setPAD] = useState([]);
@@ -51,7 +57,7 @@ const NewShipment = () => {
     });
   }
 
-  // NOTE: Get All Medications
+  // NOTE: Get All Medications And Addresses
 
   const getMedicationAndAddress = async (id) => {
     setAM([]);
@@ -93,24 +99,62 @@ const NewShipment = () => {
     getMedicationAndAddress(selectedPatientName._id);
   };
 
-  // const onFormLayoutChange = function (changedFields, allFields) {};
+  const disabledDate = (current) => {
+    if (
+      formRef.current?.getFieldValue(["shipmentdate"]) !== null &&
+      formRef.current?.getFieldValue(["shipmentdate"]) !== undefined
+    ) {
+      const startDate = formRef.current
+        ?.getFieldValue(["shipmentdate"])
+        .format(`${"MM/DD/YYYY"}`);
+      return current && current < dayjs(startDate, "MM/DD/YYYY").endOf("day");
+    }
+  };
+  const onFormLayoutChange = function (changedFields, allFields) {
+    if (allFields[2].value !== null && allFields[2].value !== undefined) {
+      //console.log(allFields[2].value);
 
-  const onFinish = (values) => {
-    // const selectedPatientName = apList.find(
-    //   (patient) => patient.name === values.patientname
-    // );
+      disabledDate(allFields[2].value.format(`${"MM/DD/YYYY"}`));
+    }
+  };
 
-    // const paylooad = {
-    //   addressId: am._id,
-    //   medicationId: am.medicationId,
-    //   deliveryDate: "2023-01-14T13:16:26Z",
-    //   dosage: "2",
-    //   nextDeliveryDate: "2023-01-19T13:16:36Z",
-    //   patientId: selectedPatientName._id,
-    //   trackUrl:values.trackurl,
-    // };
+  const onFinish = async (values) => {
+    const selectedPatientName = apList.find(
+      (patient) => patient.name === values.patientname
+    );
 
-    console.log(values);
+    const amID = am.find(
+      (madicationName) => madicationName.name === values.medicationname
+    );
+
+    const padID = pad.find((patient) => {
+      return (
+        values.patientaddress ===
+        `${patient.addressLine1},${patient.addressLine2},${patient.city},${patient.state},${patient.pincode}`
+      );
+    });
+
+    const payload = {
+      patientId: selectedPatientName._id,
+      medicationId: amID.medicationId,
+      addressId: padID._id,
+      deliveryDate: new Date(values.shipmentdate.format()).toISOString(),
+      nextDeliveryDate: new Date(
+        values.nextshipmentdate.format()
+      ).toISOString(),
+      dosage: "2",
+      trackUrl: values.trackurl,
+    };
+
+
+    try {
+      const response = await addShipment(payload);
+      console.log(response.data.data);
+     
+    } catch (error) {
+      console.log("Error while Getting AllMedication: ", error);
+    }
+   
   };
 
   return (
@@ -127,7 +171,7 @@ const NewShipment = () => {
             span: "100vh",
           }}
           layout="horizontal"
-          //onFieldsChange={onFormLayoutChange}
+          onFieldsChange={onFormLayoutChange}
           onFinish={onFinish}
           size="large"
         >
@@ -174,10 +218,12 @@ const NewShipment = () => {
 
           <label htmlFor="shipmentdate">Shipment Date</label>
           <Form.Item name="shipmentdate">
-            <DatePicker
-              defaultValue={dayjs("01/01/2015", dateFormatList[0])}
-              format={dateFormatList}
-            />
+            <DatePicker format={dateFormate} />
+          </Form.Item>
+
+          <label htmlFor="nextshipmentdate">Shipment Date</label>
+          <Form.Item name="nextshipmentdate">
+            <DatePicker disabledDate={disabledDate} format={dateFormate} />
           </Form.Item>
 
           <div className="grid md:grid-cols-2  gap-3">
@@ -226,19 +272,19 @@ const NewShipment = () => {
 
 export default NewShipment;
 
-// useEffect(() => {
-//   const getData = async () => {
-//     try {
-//       const response = await ShipmentDetail({
-//         _id: "6385e58a673b9e3583c17a58",
-//       });
+// const getDateFormate = (a) => {
+//   const b = `${a.$d}`.split(" ");
 
-//       if (Object.keys(response.data.data).length) {
-//         setSD(response.data.data);
-//       }
-//     } catch (error) {
-//       console.log("Error while Getting ShipmentDetail : ", error);
-//     }
-//   };
-//   getData();
-// }, [ShipmentDetail]);
+//   const formatter = new Intl.DateTimeFormat("en-IN", {
+//     year: "numeric",
+//     month: "2-digit",
+//     day: "2-digit",
+//   });
+//   const date = new Date(b[3], a.$M, a.$D);
+//   const result = formatter.format(date).split("/").join("-");
+//   console.log(`${result}T${b[4]}Z`); // outputs “01/03/2018”
+
+//   // console.log(`${b[3]}-${a.$M + 1}-${a.$D}T${b[4]}Z`);
+
+//   return result;
+// };

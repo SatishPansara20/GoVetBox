@@ -37,7 +37,7 @@ const PageHeader = () => {
                 return isLast ? (
                   <Breadcrumb.Item key={i}>{name}</Breadcrumb.Item>
                 ) : (
-                  <Breadcrumb.Item>
+                  <Breadcrumb.Item key={i}>
                     <Link to={`${routeTo}`}>{name}</Link>
                   </Breadcrumb.Item>
                 );

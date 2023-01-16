@@ -2,16 +2,19 @@ import React, { useEffect } from "react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
+//import { v4 as uuidv4 } from "uuid";
 
 import { addShipmentdataToCommonSlice } from "../../Redux/commonSlice";
-
-import { Form, Table, Typography, Button, Col, Row } from "antd";
+import {
+  useGetShipmentMutation,
+  useDeleteShipmentMutation,
+} from "../../Redux/ReduxApi";
+import { Form, Table, Typography, Button } from "antd";
 import { Link } from "react-router-dom";
-import axios from "axios";
-
-const getShipmentURL = "http://202.131.117.92:7155/admin_v1/api/getShipment";
 
 const AddShipment = () => {
+  const [getShipment] = useGetShipmentMutation();
+  const [deleteShipment] = useDeleteShipmentMutation();
   const dispatch = useDispatch();
 
   const navigate = useNavigate();
@@ -20,34 +23,23 @@ const AddShipment = () => {
   const [data, setData] = useState([]);
   const [editingKey, setEditingKey] = useState("");
 
-  const userTokens = localStorage.getItem("authTokenGoBox");
-
   // NOTE: All patient Information
   useEffect(() => {
-    if ((userTokens !== undefined) | null) {
-      const config = {
-        headers: {
-          Authorization: `${JSON.parse(userTokens)}`,
-        },
-      };
-      axios
-        .post(
-          getShipmentURL,
-          {
-            length: 30,
-            search: "",
-            start: 0,
-          },
-          config
-        )
-        .then((response) => {
-          setData(response.data.data.data);
-        })
-        .catch((err) => {
-          console.log(err);
+    const getData = async () => {
+      try {
+        const response = await getShipment({
+          length: 40,
+          search: "",
+          start: 0,
         });
-    }
-  }, [userTokens]);
+        // console.log(response.data.data.data);
+        setData(response.data.data.data);
+      } catch (error) {
+        console.log("Error while Getting AllMedication: ", error);
+      }
+    };
+    getData();
+  }, [getShipment]);
 
   // NOTE: edit DATA
   const edit = (record) => {
@@ -56,6 +48,19 @@ const AddShipment = () => {
   };
   const cancel = () => {
     setEditingKey("");
+  };
+
+  // NOTE: DeleteShipmentRow DATA
+  const deleteShipmentRow = async (record) => {
+    try {
+      const response = await deleteShipment({
+        _id: record._id,
+      });
+      console.log(response.data.data);
+     
+    } catch (error) {
+      console.log("Error while Getting AllMedication: ", error);
+    }
   };
 
   //responsive: ["xxl", "xl", "lg", "md", "sm", "xs"],
@@ -135,8 +140,8 @@ const AddShipment = () => {
               Edit
             </Typography.Link>
             <Typography.Link
-              disabled={editingKey !== ""}
-              onClick={() => edit(record)}
+              //disabled={editingKey !== ""}
+              onClick={() => deleteShipmentRow(record)}
               style={{
                 marginRight: 8,
               }}
@@ -149,33 +154,33 @@ const AddShipment = () => {
     },
   ];
 
+  const editableRow = {
+    color: "blue",
+  };
   return (
     <>
-      <div className="w-full z-0 flex flex-col justify-center items-center">
-        <h2 className="text-xl p-4 ">Add Shipment</h2>
-        <div className="grid grid-cols-2">
-          <Row>
-            <Col span={18}>
-              <div>SearchBar</div>
-            </Col>
-            <Col span={6}>
-              <Row justify="end">
-                <Button className="bg-sky-600 mr-2" type="primary">
-                  <Link to="/addshipment/newshipment">ADD</Link>
-                </Button>
-              </Row>
-            </Col>
-          </Row>
+      <div className="relative p-4 w-full h-screen z-0 flex flex-col justify-center items-center ">
+        <h2 className="w-full text-xl p-4 ">Add Shipment</h2>
+        <div className="w-full p-0 h-fit grid grid-cols-2">
+          <div className=" justify-self-start self-center">SearchBar</div>
+          <Button
+            className="bg-sky-600 mr-2 justify-self-end  self-center"
+            type="primary"
+          >
+            <Link to="/addshipment/newshipment">ADD</Link>
+          </Button>
         </div>
-        <Form form={form} component={false}>
+        <Form className="inline-block " form={form} component={false}>
           <Table
-            className="bg-neutral-400 flex flex-shrink"
+            className=" w-full inline-block flex-shrink overflow-auto"
             bordered
             dataSource={data}
+            //rowKey={() => uuidv4()}
+            rowKey={(data) => data._id}
             inputType="text"
             columns={columns}
             size="small"
-            rowClassName="editable-row"
+            rowClassName={editableRow}
             pagination={{
               onChange: cancel,
             }}

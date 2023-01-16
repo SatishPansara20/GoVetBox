@@ -15,7 +15,6 @@ export const userAPI = createApi({
   }),
   tagTypes: ["userData"],
   endpoints: (builder) => ({
-
     getDashboardata: builder.mutation({
       query: () => ({
         url: "/dashboard",
@@ -23,6 +22,16 @@ export const userAPI = createApi({
       }),
       invalidatesTags: ["userData"],
     }),
+
+    getShipment: builder.mutation({
+      query: (data) => ({
+        url: "/getShipment",
+        method: "POST",
+        body: data,
+      }),
+      invalidatesTags: ["userData"],
+    }),
+
     getApprovedPatientList: builder.mutation({
       query: (data) => ({
         url: "/getApprovedPatientList",
@@ -68,7 +77,23 @@ export const userAPI = createApi({
       invalidatesTags: ["userData"],
     }),
 
+    deleteShipment: builder.mutation({
+      query: (data) => ({
+        url: "/deleteShipment",
+        method: "POST",
+        body: data,
+      }),
+      invalidatesTags: ["userData"],
+    }),
 
+    addShipment: builder.mutation({
+      query: (data) => ({
+        url: "/addShipment",
+        method: "POST",
+        body: data,
+      }),
+      invalidatesTags: ["userData"],
+    }),
   }),
 });
 
@@ -79,4 +104,7 @@ export const {
   useGetAllMedicationURLMutation,
   useGetDashboardataMutation,
   useUpdateShipmentMutation,
+  useAddShipmentMutation,
+  useDeleteShipmentMutation,
+  useGetShipmentMutation,
 } = userAPI;

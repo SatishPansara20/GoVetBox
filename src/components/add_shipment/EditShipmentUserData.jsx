@@ -13,8 +13,13 @@ import {
 } from "../../Redux/ReduxApi";
 
 import dayjs from "dayjs";
+import timezone from "dayjs/plugin/timezone";
+import utc from "dayjs/plugin/utc";
+dayjs.extend(utc);
+dayjs.extend(timezone);
+dayjs.tz.setDefault("Asia/Kolkata");
 
-const dateFormatList = ["DD/MM/YYYY", "DD/MM/YY"];
+const dateFormat = "DD/MM/YYYY";
 
 let dispayEditFrom;
 let patientNames = [];
@@ -64,18 +69,6 @@ const EditShipmentUserData = () => {
     getShipmentDetail();
   }, [ShipmentDetail, approvedPatientList, id]);
 
-  const converDate = (d) => {
-    const a = d;
-
-    const date = a.split("-");
-
-    const b = date[2].split("");
-    const e = `${b[0]}${b[1]}`;
-
-    const c = `${date[1]}/${e}/${date[0]}`;
-    return c;
-  };
-
   // NOTE: Patient Medications and Address
 
   const getMedicationAndAddress = async (patientId) => {
@@ -121,13 +114,15 @@ const EditShipmentUserData = () => {
   // const onFormLayoutChange = function (changedFields, allFields) {};
 
   const onFinish = async (values) => {
+    console.log();
+
     try {
       const response = await updateShipment({
         patientId: sd.patientId,
         medicationId: sd.medicationId,
         addressId: sd.addressId,
-        deliveryDate: "2022-02-17T11:24:47Z",
-        nextDeliveryDate: "2023-01-13T11:28:00Z",
+        deliveryDate: new Date(values.deliveryDate.format()).toISOString(),
+        nextDeliveryDate: new Date(values.deliveryDate.format()).toISOString(),
         dosage: values.dosage,
         trackUrl: values.trackUrl,
         _id: id,
@@ -137,7 +132,6 @@ const EditShipmentUserData = () => {
     } catch (error) {
       console.log("Error while Getting AllMedication: ", error);
     }
-    console.log(values);
   };
 
   if (apList.length > 0 && Object.keys(sd).length > 0) {
@@ -148,136 +142,133 @@ const EditShipmentUserData = () => {
       return patientNames;
     });
 
-    dispayEditFrom = (
-      <Form
-        ref={formRef}
-        name="control-ref"
-        labelCol={{
-          span: 2,
-        }}
-        wrapperCol={{
-          span: "100vh",
-        }}
-        layout="horizontal"
-        // onFieldsChange={onFormLayoutChange}
-        onFinish={onFinish}
-        size="large"
-        initialValues={{
-          patinetName: sd.patinetName,
-          medicationName: sd.medicationName,
-          trackUrl: sd.trackUrl,
-          dosage: sd.dosage,
-          patientAddress: `${sd.addressLine1},${sd.addressLine2}`,
-        }}
-      >
-        <div className="grid md:grid-cols-2  gap-3">
-          <div className="flex flex-col ">
-            <label htmlFor="patinetName">Patient Name</label>
-            <Form.Item name="patinetName">
-              <Select onChange={handleSelecteName}>
-                {patientNames.length > 0 ? (
-                  patientNames.map((patient, i) => {
-                    return (
-                      <Select.Option
-                        key={i}
-                        value={`${patient}`}
-                      >{`${patient}`}</Select.Option>
-                    );
-                  })
-                ) : (
-                  <Select.Option value="No Option">No Option</Select.Option>
-                )}
-              </Select>
-            </Form.Item>
-          </div>
-          <div className="flex flex-col ">
-            <label htmlFor="medicationName">Medication Name </label>
-            <Form.Item name="medicationName">
-              <Select>
-                {am.length > 0 ? (
-                  am.map((patient, i) => {
-                    return (
-                      <Select.Option
-                        key={i}
-                        value={`${patient.name}`}
-                      >{`${patient.name}`}</Select.Option>
-                    );
-                  })
-                ) : (
-                  <Select.Option value="No Option">No Option</Select.Option>
-                )}
-              </Select>
-            </Form.Item>
-          </div>
-        </div>
+    const dDate = dayjs(sd.deliveryDate, `${"YYYY-MM-DD"}T${"HH:mm:ss"}Z`);
+    const ndDate = dayjs(sd.nextDeliveryDate, `${"YYYY-MM-DD"}T${"HH:mm:ss"}Z`);
 
-        <div className="grid md:grid-cols-2  gap-3">
-          <div className="flex flex-col ">
-            <label htmlFor="deliveryDate">Shipment Date</label>
-            <Form.Item name="deliveryDate">
-              <DatePicker
-                defaultValue={dayjs(
-                  converDate(sd.deliveryDate),
-                  dateFormatList[0]
-                )}
-                format={dateFormatList}
-              />
-            </Form.Item>
-          </div>
-          <div className="flex flex-col ">
-            <label htmlFor="nextDeliveryDate">Next Shipment Date</label>
-            <Form.Item name="nextDeliveryDate">
-              <DatePicker
-                defaultValue={dayjs(
-                  converDate(sd.nextDeliveryDate),
-                  dateFormatList[0]
-                )}
-                format={dateFormatList}
-              />
-            </Form.Item>
-          </div>
-        </div>
+    if ((dDate && ndDate) !== undefined && (dDate && ndDate) !== null) {
+      // console.log( dayjs(dDate.format(`${"DD/MM/YYYY"}`), dateFormat));
 
-        <div className="grid md:grid-cols-2  gap-3">
-          <div className="flex flex-col ">
-            <label htmlFor="trackUrl">Track URL</label>
-            <Form.Item name="trackUrl">
-              <Input />
-            </Form.Item>
+      dispayEditFrom = (
+        <Form
+          ref={formRef}
+          initialValues={{
+            patinetName: sd.patinetName,
+            medicationName: sd.medicationName,
+            deliveryDate: dayjs(dDate.format(`${"DD/MM/YYYY"}`)),
+            nextDeliveryDate: dayjs(ndDate.format(`${"DD/MM/YYYY"}`)),
+            trackUrl: sd.trackUrl,
+            dosage: sd.dosage,
+            patientAddress: `${sd.addressLine1},${sd.addressLine2}`,
+          }}
+          name="control-ref"
+          labelCol={{
+            span: 2,
+          }}
+          wrapperCol={{
+            span: "100vh",
+          }}
+          layout="horizontal"
+          // onFieldsChange={onFormLayoutChange}
+          onFinish={onFinish}
+          size="large"
+        >
+          <div className="grid md:grid-cols-2  gap-3">
+            <div className="flex flex-col ">
+              <label htmlFor="patinetName">Patient Name</label>
+              <Form.Item name="patinetName">
+                <Select onChange={handleSelecteName}>
+                  {patientNames.length > 0 ? (
+                    patientNames.map((patient, i) => {
+                      return (
+                        <Select.Option
+                          key={i}
+                          value={`${patient}`}
+                        >{`${patient}`}</Select.Option>
+                      );
+                    })
+                  ) : (
+                    <Select.Option value="No Option">No Option</Select.Option>
+                  )}
+                </Select>
+              </Form.Item>
+            </div>
+            <div className="flex flex-col ">
+              <label htmlFor="medicationName">Medication Name </label>
+              <Form.Item name="medicationName">
+                <Select>
+                  {am.length > 0 ? (
+                    am.map((patient, i) => {
+                      return (
+                        <Select.Option
+                          key={i}
+                          value={`${patient.name}`}
+                        >{`${patient.name}`}</Select.Option>
+                      );
+                    })
+                  ) : (
+                    <Select.Option value="No Option">No Option</Select.Option>
+                  )}
+                </Select>
+              </Form.Item>
+            </div>
           </div>
-          <div className="flex flex-col ">
-            <label htmlFor="dosage">Dosage</label>
-            <Form.Item name="dosage">
-              <Input />
-            </Form.Item>
+
+          <div className="grid md:grid-cols-2  gap-3">
+            <div className="flex flex-col ">
+              <label htmlFor="deliveryDate">Shipment Date</label>
+              <Form.Item name="deliveryDate">
+                <DatePicker format={dateFormat} />
+              </Form.Item>
+            </div>
+            <div className="flex flex-col ">
+              <label htmlFor="nextDeliveryDate">Next Shipment Date</label>
+              <Form.Item name="nextDeliveryDate">
+                <DatePicker format={dateFormat} />
+              </Form.Item>
+            </div>
           </div>
-        </div>
 
-        <label htmlFor="patientAddress">Patient Address</label>
-        <Form.Item name="patientAddress">
-          <Select>
-            {pad.length > 0 ? (
-              pad.map((patient, i) => {
-                return (
-                  <Select.Option
-                    key={i}
-                    value={`${patient.addressLine1},${patient.addressLine2},${patient.city},${patient.state},${patient.pincode}`}
-                  >{`${patient.addressLine1},${patient.addressLine2},${patient.city},${patient.state},${patient.pincode}`}</Select.Option>
-                );
-              })
-            ) : (
-              <Select.Option value="No Option">No Option</Select.Option>
-            )}
-          </Select>
-        </Form.Item>
+          <div className="grid md:grid-cols-2  gap-3">
+            <div className="flex flex-col ">
+              <label htmlFor="trackUrl">Track URL</label>
+              <Form.Item name="trackUrl">
+                <Input />
+              </Form.Item>
+            </div>
+            <div className="flex flex-col ">
+              <label htmlFor="dosage">Dosage</label>
+              <Form.Item name="dosage">
+                <Input />
+              </Form.Item>
+            </div>
+          </div>
 
-        <Form.Item>
-          <Button className="bg-violet-700" type="primary" htmlType="submit">
-            Submit
-          </Button>
-        </Form.Item>
-      </Form>
-    );
+          <label htmlFor="patientAddress">Patient Address</label>
+          <Form.Item name="patientAddress">
+            <Select>
+              {pad.length > 0 ? (
+                pad.map((patient, i) => {
+                  return (
+                    <Select.Option
+                      key={i}
+                      value={`${patient.addressLine1},${patient.addressLine2},${patient.city},${patient.state},${patient.pincode}`}
+                    >{`${patient.addressLine1},${patient.addressLine2},${patient.city},${patient.state},${patient.pincode}`}</Select.Option>
+                  );
+                })
+              ) : (
+                <Select.Option value="No Option">No Option</Select.Option>
+              )}
+            </Select>
+          </Form.Item>
+
+          <Form.Item>
+            <Button className="bg-violet-700" type="primary" htmlType="submit">
+              Submit
+            </Button>
+          </Form.Item>
+        </Form>
+      );
+    }
   }
 
   return (
@@ -291,148 +282,3 @@ const EditShipmentUserData = () => {
 };
 
 export default EditShipmentUserData;
-
-// useEffect(() => {
-//   const getData = async () => {
-//     try {
-//       const response = await ShipmentDetail({
-//         _id: "6385e58a673b9e3583c17a58",
-//       });
-
-//       if (Object.keys(response.data.data).length) {
-//         setSD(response.data.data);
-//       }
-//     } catch (error) {
-//       console.log("Error while Getting ShipmentDetail : ", error);
-//     }
-//   };
-//   getData();
-// }, [ShipmentDetail]);
-
-//  {/* <Form
-//           ref={formRef}
-//           name="control-ref"
-//           labelCol={{
-//             span: 2,
-//           }}
-//           wrapperCol={{
-//             span: "100vh",
-//           }}
-//           layout="horizontal"
-//           // onFieldsChange={onFormLayoutChange}
-//           onFinish={onFinish}
-//           size="large"
-//           // initialValues={{
-//           //   patinetName: sd?.patinetName,
-//           //   medicationName: sd?.medicationName,
-//           //   // deliveryDate: sd?.deliveryDate,
-//           //   // nextDeliveryDate: sd?.nextDeliveryDate,
-//           //   trackUrl: sd?.trackUrl,
-//           //   dosage: sd?.dosage,
-//           //   patientAddress: `${sd?.addressLine1},${sd?.addressLine2}`,
-//           // }}
-//         >
-//           <div className="grid md:grid-cols-2  gap-3">
-//             <div className="flex flex-col ">
-//               <label htmlFor="patinetName">Patient Name</label>
-//               <Form.Item name="patinetName">
-//                 <Select onChange={handleSelecteName}>
-//                   {patientNames.length > 0 ? (
-//                     patientNames.map((patient, i) => {
-//                       return (
-//                         <Select.Option
-//                           key={i}
-//                           value={`${patient}`}
-//                         >{`${patient}`}</Select.Option>
-//                       );
-//                     })
-//                   ) : (
-//                     <Select.Option value="No Option">No Option</Select.Option>
-//                   )}
-//                 </Select>
-//               </Form.Item>
-//             </div>
-//             <div className="flex flex-col ">
-//               <label htmlFor="medicationName">Medication Name </label>
-//               <Form.Item name="medicationName">
-//                 <Select>
-//                   {am.length > 0 ? (
-//                     am.map((patient, i) => {
-//                       return (
-//                         <Select.Option
-//                           key={i}
-//                           value={`${patient.name}`}
-//                         >{`${patient.name}`}</Select.Option>
-//                       );
-//                     })
-//                   ) : (
-//                     <Select.Option value="No Option">No Option</Select.Option>
-//                   )}
-//                 </Select>
-//               </Form.Item>
-//             </div>
-//           </div>
-
-//           <div className="grid md:grid-cols-2  gap-3">
-//             <div className="flex flex-col ">
-//               <label htmlFor="deliveryDate">Shipment Date</label>
-//               <Form.Item name="deliveryDate">
-//                 <DatePicker
-//                   defaultValue={dayjs(dpValue.deliveryDate, dateFormatList[0])}
-//                   format={dateFormatList}
-//                 />
-//               </Form.Item>
-//             </div>
-//             <div className="flex flex-col ">
-//               <label htmlFor="nextDeliveryDate">Next Shipment Date</label>
-//               <Form.Item name="nextDeliveryDate">
-//                 <DatePicker
-//                   defaultValue={dayjs(
-//                     dpValue.nextDeliveryDate,
-//                     dateFormatList[0]
-//                   )}
-//                   format={dateFormatList}
-//                 />
-//               </Form.Item>
-//             </div>
-//           </div>
-
-//           <div className="grid md:grid-cols-2  gap-3">
-//             <div className="flex flex-col ">
-//               <label htmlFor="trackUrl">Track URL</label>
-//               <Form.Item name="trackUrl">
-//                 <Input />
-//               </Form.Item>
-//             </div>
-//             <div className="flex flex-col ">
-//               <label htmlFor="dosage">Dosage</label>
-//               <Form.Item name="dosage">
-//                 <Input />
-//               </Form.Item>
-//             </div>
-//           </div>
-
-//           <label htmlFor="patientAddress">Patient Address</label>
-//           <Form.Item name="patientAddress">
-//             <Select>
-//               {pad.length > 0 ? (
-//                 pad.map((patient, i) => {
-//                   return (
-//                     <Select.Option
-//                       key={i}
-//                       value={`${patient.addressLine1},${patient.addressLine2},${patient.city},${patient.state},${patient.pincode}`}
-//                     >{`${patient.addressLine1},${patient.addressLine2},${patient.city},${patient.state},${patient.pincode}`}</Select.Option>
-//                   );
-//                 })
-//               ) : (
-//                 <Select.Option value="No Option">No Option</Select.Option>
-//               )}
-//             </Select>
-//           </Form.Item>
-
-//           <Form.Item>
-//             <Button className="bg-violet-700" type="primary" htmlType="submit">
-//               Submit
-//             </Button>
-//           </Form.Item>
-//         </Form>
