@@ -18,6 +18,8 @@ const initialState = {
   userData: {},
 };
 
+
+
 export const loginAction = (data) => ({
   type: "API",
   payload: {
@@ -52,12 +54,16 @@ const loginSlice = createSlice({
       axios.defaults.headers.common["Authorization"] =
         action.payload.data.accessToken;
 
-      localStorage.setItem(
-        LS_AUTHTOKEN,
-        JSON.stringify(action.payload.data.accessToken)
-      );
+      try {
+        localStorage.setItem(
+          LS_AUTHTOKEN,
+          JSON.stringify(action.payload.data.accessToken)
+        );
 
-      localStorage.setItem(LS_USER, JSON.stringify(action.payload.data));
+        localStorage.setItem(LS_USER, JSON.stringify(action.payload.data));
+      } catch (e) {
+        console.error(e);
+      }
 
       state.userData = action.payload;
       state.token = action.payload.data.accessToken;

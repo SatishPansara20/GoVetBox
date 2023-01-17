@@ -24,26 +24,31 @@ const SideBar = () => {
   const navigate = useNavigate();
   const onClick = (e) => {
     navigate(`/${e.key}`);
-    // console.log(e);
   };
 
   return (
     <>
-     
-      <Menu
-        onSelect={onClick}
-        style={{
-          width: 256,
-          backgroundColor:"gray",
-          height:"100vh",
-      
-        }}
-
-        defaultSelectedKeys={["dashboard"]}
-        defaultOpenKeys={["dashboard"]}
-        mode="inline"
-        items={items}
-      />
+      <div className="h-full flex flex-col">
+        <div className="h-10 text-center text-2xl">Box</div>
+        <Menu
+          onSelect={onClick}
+          style={{
+            flexGrow: 1,
+            flexBasis: "auto",
+            flexShrink: 1,
+            overflow: "auto",
+            borderRight: 0,
+            display: "block",
+            backgroundColor: "#6f8383",
+            opacity: "0.5",
+            color: "black",
+          }}
+          defaultSelectedKeys={["dashboard"]}
+          defaultOpenKeys={["dashboard"]}
+          mode="inline"
+          items={items}
+        />
+      </div>
     </>
   );
 };

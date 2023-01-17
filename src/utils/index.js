@@ -8,12 +8,25 @@ export const setupAxios = (axios, store) => {
   //const token = JSON.parse(localStorage.getItem(LS_AUTHTOKEN));
   //const userData = JSON.parse(localStorage.getItem(LS_USER));
 
-  const token = localStorage.getItem(LS_AUTHTOKEN);
-  const userData = localStorage.getItem(LS_USER);
+  // const token = localStorage.getItem(LS_AUTHTOKEN);
+  // const userData = localStorage.getItem(LS_USER);
+
+  const loadFromLocalStorage = (data) => {
+    try {
+      const result = data;
+      return result ? JSON.parse(result) : undefined;
+    } catch (e) {
+      console.error(e);
+      return undefined;
+    }
+  };
 
   // It's used to rehydrate redux auth data when page is refreshed
-  if (token) {
-    store.dispatch({ type: LOGIN_S, payload: { data: userData } });
+  if (loadFromLocalStorage(localStorage.getItem(LS_AUTHTOKEN))) {
+    store.dispatch({
+      type: LOGIN_S,
+      payload: { data: loadFromLocalStorage(localStorage.getItem(LS_USER)) },
+    });
   } else {
     store.dispatch({ type: LOGIN_F, payload: {} });
   }

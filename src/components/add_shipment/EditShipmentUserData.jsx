@@ -67,6 +67,11 @@ const EditShipmentUserData = () => {
       }
     };
     getShipmentDetail();
+
+
+   
+
+
   }, [ShipmentDetail, approvedPatientList, id]);
 
   // NOTE: Patient Medications and Address
@@ -141,6 +146,15 @@ const EditShipmentUserData = () => {
       }
       return patientNames;
     });
+
+    am.map((patient, i) => {
+      return (
+        <Select.Option
+          key={i}
+          value={`${patient.name}`}
+        >{`${patient.name}`}</Select.Option>
+      );
+    })
 
     const dDate = dayjs(sd.deliveryDate, `${"YYYY-MM-DD"}T${"HH:mm:ss"}Z`);
     const ndDate = dayjs(sd.nextDeliveryDate, `${"YYYY-MM-DD"}T${"HH:mm:ss"}Z`);

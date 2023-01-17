@@ -33,7 +33,7 @@ const Dashboard = () => {
             {Object.keys(cardContents).length > 0
               ? Object.entries(cardContents).map(([k, y], index) => {
                   return (
-                    <Card key={index} className="bg-blue-700 p-0 " title={y}>
+                    <Card key={index} className="bg-blue-700 p-0 " style={{  wordWrap: 'break-word'}} title={y}>
                       {k}
                     </Card>
                   );

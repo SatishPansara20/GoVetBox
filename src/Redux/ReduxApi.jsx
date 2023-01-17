@@ -1,4 +1,5 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+//import dayjs from "dayjs";
 
 export const userAPI = createApi({
   reducerPath: "api",
@@ -29,6 +30,21 @@ export const userAPI = createApi({
         method: "POST",
         body: data,
       }),
+      // transformResponse: (response) => {
+      //   //2022-11-10T18:30:00Z  //dayjs(eDate).format("DD-MM-YYYY")  deliveryDate  nextDeliveryDate
+      //   const data = response.data.data.data.map((shipment) => {
+      //     shipment.deliveryDate = dayjs(shipment.deliveryDate).format(
+      //       "DD-MM-YYYY"
+      //     );
+      //     shipment.nextDeliveryDate = dayjs(shipment.nextDeliveryDate).format(
+      //       "DD-MM-YYYY"
+      //     );
+      //     console.log(shipment);
+
+      //     return shipment;
+      //   });
+      //   return data;
+      // },
       invalidatesTags: ["userData"],
     }),
 
