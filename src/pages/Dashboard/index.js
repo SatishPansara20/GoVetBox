@@ -8,11 +8,14 @@ const Dashboard = () => {
     refetchOnMountOrArgChange: true,
   });
 
+  const delay = () => new Promise((res) => setTimeout(() => res(), 5000));
+
   const [cardContents, setCardContents] = useState({});
 
   useEffect(() => {
     const getData = async () => {
       try {
+        await delay();
         const response = await dashboardData();
 
         if (response.status === 400) {
