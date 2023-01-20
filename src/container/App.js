@@ -5,6 +5,7 @@ import { Provider } from "react-redux";
 import { BrowserRouter } from "react-router-dom";
 import { store } from "../Redux/store";
 import Routes from "./routes";
+import { ToastContainer } from "react-toastify";
 import Loader from "../components/common/loader";
 import { setupAxios } from "../utils";
 import { ErrorBoundary } from "../components/Error";
@@ -28,6 +29,7 @@ const AppContainer = () => (
         </Suspense>
       </Provider>
     </ErrorBoundary>
+    <ToastContainer />
   </>
 );
 

@@ -1,15 +1,18 @@
 import React from "react";
 import { useState, useRef } from "react";
 import axios from "axios";
+import { useDispatch } from "react-redux";
 import { UserOutlined } from "@ant-design/icons";
 import { Button, Input, Form } from "antd";
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+
+import { toast } from "react-toastify";
+import { makeToast } from "../toast/fuctions";
 
 import { FORGOT_PASSWORD } from "../../constants/index";
 
 const ForgotPassword = () => {
   //  const [api, contextHolder] = notification.useNotification();
+  const dispatch = useDispatch();
 
   const formRef = useRef();
   const [email, setEmail] = useState("");
@@ -32,7 +35,7 @@ const ForgotPassword = () => {
       const response = await axios.post(FORGOT_PASSWORD, {
         email: values.email,
       });
-     // console.log(response.data);
+      // console.log(response.data);
 
       if (response.data.status === 200) {
         // openNotificationWithIcon({
@@ -40,16 +43,8 @@ const ForgotPassword = () => {
         //   message: "Success",
         //   description: response.data.message,
         // });
-        toast.success(response.data.message, {
-          position: "top-right",
-          autoClose: 5000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: "light",
-        });
+
+        makeToast(dispatch, response.data.message, toast.success);
         formRef?.current.setFieldsValue({
           email: "",
         });
@@ -64,16 +59,7 @@ const ForgotPassword = () => {
           //   description: error.response.data.message,
           // });
 
-          toast.warn(error.response.data.message, {
-            position: "top-right",
-            autoClose: 5000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-            theme: "light",
-          });
+          makeToast(dispatch, error.response.data.message, toast.warn);
         }
       } else if (error.request) {
         console.log(
@@ -149,7 +135,6 @@ const ForgotPassword = () => {
             >
               SUBMIT
             </Button>
-            <ToastContainer />
           </Form>
         </div>
       </section>

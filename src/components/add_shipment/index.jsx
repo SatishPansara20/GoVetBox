@@ -8,7 +8,7 @@ import {
   useDeleteShipmentMutation,
 } from "../../Redux/ReduxApi";
 import { useSelector, useDispatch } from "react-redux";
-import { toastData, toastAction } from "../../Redux/commonSlice";
+import { toastData } from "../../Redux/commonSlice";
 
 import { Form, Table, Typography, Button } from "antd";
 import { Link } from "react-router-dom";
@@ -20,15 +20,15 @@ import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
 
 import { v4 as uuid } from "uuid";
 
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
-
 import ButtonMI from "@mui/material/Button";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
+
+import { toast } from "react-toastify";
+import { makeToast } from "../toast/fuctions";
 
 let dataSource = [];
 
@@ -107,29 +107,10 @@ const AddShipment = () => {
         }
       }
     };
+    if (receivedToastData !== "")
+      makeToast(dispatch, receivedToastData, toast.success);
     getData();
   }, [getShipment, shipmentPayload, dispatch, receivedToastData]);
-
-  const makeToast = (receivedToastData) => {
-    if (receivedToastData !== "") {
-      // console.log(receivedToastData);
-      toast.success(receivedToastData, {
-        position: "top-right",
-        onClose: () => {
-          dispatch(toastAction(""));
-        },
-        autoClose: 6000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "light",
-      });
-    }
-  };
-
-  makeToast(receivedToastData);
 
   if (data.length > 0) {
     //console.log(data.length);
@@ -248,7 +229,7 @@ const AddShipment = () => {
                 }}
               />
             </Typography.Link>
-            <ToastContainer />
+
             <Typography.Link
               onClick={() => deleteShipmentRow(record)}
               style={{
@@ -261,7 +242,6 @@ const AddShipment = () => {
                 }}
               />
             </Typography.Link>
-            <ToastContainer />
           </span>
         );
       },
@@ -307,33 +287,35 @@ const AddShipment = () => {
         _id: deleteRecord._id,
       });
       if (response.data.status === 200) {
-        toast.success(response.data.message, {
-          position: "top-right",
-          onClose: () => {
-            dispatch(toastAction(""));
-          },
-          autoClose: 2000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: "light",
-        });
+        makeToast(dispatch, response.data.message, toast.success);
+        // toast.success(response.data.message, {
+        //   position: "top-right",
+        //   onClose: () => {
+        //     dispatch(toastAction(""));
+        //   },
+        //   autoClose: 2000,
+        //   hideProgressBar: false,
+        //   closeOnClick: true,
+        //   pauseOnHover: true,
+        //   draggable: true,
+        //   progress: undefined,
+        //   theme: "light",
+        // });
       } else {
-        toast.info(response.data.message, {
-          position: "top-right",
-          onClose: () => {
-            dispatch(toastAction(""));
-          },
-          autoClose: 2000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: "light",
-        });
+        makeToast(dispatch, response.data.message, toast.info);
+        // toast.info(response.data.message, {
+        //   position: "top-right",
+        //   onClose: () => {
+        //     dispatch(toastAction(""));
+        //   },
+        //   autoClose: 2000,
+        //   hideProgressBar: false,
+        //   closeOnClick: true,
+        //   pauseOnHover: true,
+        //   draggable: true,
+        //   progress: undefined,
+        //   theme: "light",
+        // });
       }
     } catch (error) {
       console.log("Error while Getting AllMedication: ", error);
@@ -368,7 +350,6 @@ const AddShipment = () => {
           >
             <Link to="/addshipment/newshipment">ADD</Link>
           </Button>
-          <ToastContainer />
         </div>
         <Form className="inline-block p-2" form={form} component={false}>
           <Table
@@ -391,7 +372,6 @@ const AddShipment = () => {
               .fill()
               .map((_, index) => (index + 1) * 10)}
           />
-          <ToastContainer />
         </Form>
         <Dialog
           open={open}

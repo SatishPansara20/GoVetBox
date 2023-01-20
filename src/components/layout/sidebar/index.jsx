@@ -1,15 +1,19 @@
 import React from "react";
 import { useState, useEffect } from "react";
-// import { useRef } from "react";
+import { useRef } from "react";
 
-import { useDispatch } from "react-redux";
-import { toggleSlider } from "../../../Redux/commonSlice";
+import { useDispatch, useSelector } from "react-redux";
+import { toggleSlider, valueofsider } from "../../../Redux/commonSlice";
 
 import { AppstoreOutlined, AppstoreAddOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
+import { Layout } from "antd";
+
 import { Menu } from "antd";
 
 import { useLocation } from "react-router-dom";
+
+const { Sider } = Layout;
 
 function getItem(label, key, icon, children, type) {
   return {
@@ -35,6 +39,8 @@ const items = [
 
 const SideBar = () => {
   const dispatch = useDispatch();
+  const ref = useRef();
+  const collapsed = useSelector(valueofsider);
 
   const navigate = useNavigate();
   let location = useLocation();
@@ -43,44 +49,6 @@ const SideBar = () => {
       ? "/dashboard"
       : location.pathname
   );
-
-  // const [deviceSize, changeDeviceSize] = useState(window.innerWidth);
-  // const [flag, setFlag] = useState(true);
-  // const [removeflag, setRemovesetFlag] = useState(false);
-
-  // const pElementRef = useRef();
-
-  // useEffect(() => {
-  //   // const divElement = document.createElement("div");
-  //   // divElement.append(pElement);
-  //   // const sidebarElement = document.getElementById("sidebar");
-
-  //   const divElement = document.getElementById("box-1");
-  //   const pElement = document.getElementById("box-2");
-  //   const pElement_1 = document.createElement("p");
-  //   pElement_1.textContent = "Box";
-
-  //   const resizeW = () => changeDeviceSize(window.innerWidth);
-
-  //   window.addEventListener("resize", resizeW);
-  //   if (deviceSize < 760) {
-  //     if (removeflag) {
-  //       console.log("P got removed");
-  //       // pElementRef?.current.remove();
-  //       pElement.remove();
-  //       setFlag(true);
-  //       setRemovesetFlag(false);
-  //     }
-  //   } else {
-  //     if (flag) {
-  //       console.log("P got added");
-  //       divElement.append(pElement_1);
-  //       setFlag(false);
-  //       setRemovesetFlag(true);
-  //     }
-  //   }
-  //   return () => window.removeEventListener("resize", resizeW);
-  // }, [deviceSize, flag, removeflag]);
 
   useEffect(() => {
     if (location) {
@@ -104,66 +72,80 @@ const SideBar = () => {
 
   return (
     <>
-      <div className="h-full flex flex-col">
-        <div id="box-1" className="text-2xl text-center">
-          <p id="box-2"> Box </p>
+      <Sider
+        id="box-sider"
+        ref={ref}
+        trigger={null}
+        breakpoint={"xl"}
+        width={250}
+        collapsible
+        collapsed={collapsed}
+        collapsedWidth={0}
+      >
+        <div
+          id="box"
+          style={{
+            height: 32,
+            margin: 16,
+            background: "rgba(255, 255, 255, 0.945)",
+            textAlign: "center",
+            fontSize: 25,
+          }}
+        >
+          Box
         </div>
         <Menu
           onSelect={onClick}
-          // onClick={handleClick}
-          selectedKeys={[current]}
-          style={{
-            flexGrow: 1,
-            flexBasis: "auto",
-            flexShrink: 1,
-            overflow: "auto",
-            borderRight: 0,
-            display: "block",
-          }}
-          // defaultSelectedKeys={["dashboard"]}
-        //  defaultOpenKeys={["dashboard"]}
-          mode="vertical"
-          items={items}
           theme="dark"
+          // selectedKeys={[current]}
+          defaultSelectedKeys={["dashboard"]}
+          mode="inline"
+          items={items}
         />
-      </div>
+      </Sider>
     </>
   );
 };
 
 export default SideBar;
 
-// let location = useLocation();
-// const [current, setCurrent] = useState(
-//   location.pathname === "/" || location.pathname === ""
-//     ? "/dashboard"
-//     : location.pathname
-// );
+// divElement.append(pElement);
+
+// const divElement = document.getElementById("box-1");
+// const pElement = document.getElementById("box-2");
+// const pElement_1 = document.createElement("p");
+// pElement_1.textContent = "Box";
+
+// const [deviceSize, changeDeviceSize] = useState(window.innerWidth);
+// const [flag, setFlag] = useState(true);
+// const [removeflag, setRemovesetFlag] = useState(false);
 
 // useEffect(() => {
-//   if (location) {
-//     if (current !== location.pathname) {
-//       setCurrent(location.pathname);
+//   const sidebarElement = document.getElementById("box-sider");
+
+//   const divElement = document.createElement("div");
+
+//   let node = document.createTextNode("Hello");
+//   divElement.appendChild(node);
+
+//   const resizeW = () => changeDeviceSize(window.innerWidth);
+
+//   window.addEventListener("resize", resizeW);
+//   if (deviceSize < 760) {
+//     if (removeflag) {
+//       console.log("P got removed");
+//       // ref?.current.remove();
+//       divElement.remove();
+//       setFlag(true);
+//       setRemovesetFlag(false);
+//     }
+//   } else {
+//     if (flag) {
+//       console.log("P got added");
+//       sidebarElement.append(divElement);
+//       setFlag(false);
+//       setRemovesetFlag(true);
 //     }
 //   }
-// }, [location, current]);
-
-// const handleClick = (e) => {
-//   setCurrent(e.key);
-// };
-
-// const menu = (
-//   <div>
-//     <div className="h-8 m-4 bg-white">
-//       <p className="text-green-500 text-center">Box</p>
-//     </div>
-//     <Menu onClick={handleClick} mode="vertical" selectedKeys={[current]}>
-//       <Link to="/dashboard">
-//         <Menu.Item icon={<MailOutlined />}>Dashboard</Menu.Item>
-//       </Link>
-//       <Link to="/addshipment">
-//         <Menu.Item icon={<AppstoreOutlined />}>Add Recipes</Menu.Item>
-//       </Link>
-//     </Menu>
-//   </div>
-// );
+//   return () => window.removeEventListener("resize", resizeW);
+// }, [deviceSize, flag, removeflag]);
