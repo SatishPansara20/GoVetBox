@@ -7,21 +7,46 @@ import {
   useGetShipmentMutation,
   useDeleteShipmentMutation,
 } from "../../Redux/ReduxApi";
+import { useSelector, useDispatch } from "react-redux";
+import { toastData, toastAction } from "../../Redux/commonSlice";
+
 import { Form, Table, Typography, Button } from "antd";
 import { Link } from "react-router-dom";
 
 import { Input } from "antd";
+import Column from "antd/es/table/Column";
 import { Pagination } from "antd";
+import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
+
 import { v4 as uuid } from "uuid";
+
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
+import ButtonMI from "@mui/material/Button";
+import Dialog from "@mui/material/Dialog";
+import DialogActions from "@mui/material/DialogActions";
+import DialogContent from "@mui/material/DialogContent";
+import DialogContentText from "@mui/material/DialogContentText";
+import DialogTitle from "@mui/material/DialogTitle";
+
 let dataSource = [];
 
 const AddShipment = () => {
+  const receivedToastData = useSelector(toastData);
+  const dispatch = useDispatch();
+
+  // const [getShipment, isLoading, isSuccess, isUninitialized] =
+  //   useGetShipmentMutation();
+
   const [getShipment] = useGetShipmentMutation();
   const [deleteShipment] = useDeleteShipmentMutation();
 
   const navigate = useNavigate();
 
   const [form] = Form.useForm();
+  const [open, setOpen] = useState(false);
+  const [deleteRecord, setdeleteRecord] = useState({});
   const [data, setData] = useState([]);
   const [totalData, setTotalData] = useState(0);
   const [shipmentPayload, setShipmentPayload] = useState({
@@ -35,6 +60,13 @@ const AddShipment = () => {
   // NOTE: All patient Information
   useEffect(() => {
     const getData = async () => {
+      //Checking start value
+      if (shipmentPayload.start < 0) {
+        setShipmentPayload({
+          ...shipmentPayload,
+          start: 0,
+        });
+      }
       if (
         shipmentPayload.sort !== "" &&
         shipmentPayload.sort !== undefined &&
@@ -44,8 +76,10 @@ const AddShipment = () => {
         shipmentPayload.dir !== null
       ) {
         try {
-          console.log("1", shipmentPayload);
-          const response = await getShipment(shipmentPayload);
+          const response = await getShipment(shipmentPayload, {
+            refetchOnMountOrArgChange: true,
+          });
+
           dataSource = [];
 
           setData(response.data.data.data);
@@ -55,22 +89,47 @@ const AddShipment = () => {
         }
       } else {
         try {
-          console.log("2", shipmentPayload);
           const response = await getShipment({
             length: shipmentPayload.length,
             search: shipmentPayload.search,
             start: shipmentPayload.start,
           });
-          dataSource = [];
-          setData(response.data.data.data);
-          setTotalData(response.data.data.recordsTotal);
+
+          if (response.data.status === 200) {
+            dataSource = [];
+            setData(response.data.data.data);
+            setTotalData(response.data.data.recordsTotal);
+          } else {
+            alert(response);
+          }
         } catch (error) {
           console.log("Error while Getting getShipment: ", error);
         }
       }
     };
     getData();
-  }, [getShipment, shipmentPayload]);
+  }, [getShipment, shipmentPayload, dispatch, receivedToastData]);
+
+  const makeToast = (receivedToastData) => {
+    if (receivedToastData !== "") {
+      // console.log(receivedToastData);
+      toast.success(receivedToastData, {
+        position: "top-right",
+        onClose: () => {
+          dispatch(toastAction(""));
+        },
+        autoClose: 6000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+      });
+    }
+  };
+
+  makeToast(receivedToastData);
 
   if (data.length > 0) {
     //console.log(data.length);
@@ -82,32 +141,22 @@ const AddShipment = () => {
         nextDeliveryDate: dayjs(shipment.nextDeliveryDate).format("DD-MM-YYYY"),
       });
     });
-
-    //console.log(dataSource);
   }
 
-  // NOTE: edit DATA
+  // NOTE: Edit DATA
   const edit = (record) => {
     //dispatch(addShipmentdataToCommonSlice({ ...record }));
     navigate(`/addshipment/updateuserData/${record._id}`);
   };
-  // const cancel = () => {
-  //   setEditingKey("");
-  // };
 
-  // NOTE: DeleteShipmentRow DATA
+  // NOTE: Delete Shipment Row
   const deleteShipmentRow = async (record) => {
-    try {
-      await deleteShipment({
-        _id: record._id,
-      });
-    } catch (error) {
-      console.log("Error while Getting AllMedication: ", error);
-    }
+    setOpen(true);
+    setdeleteRecord(record);
   };
 
-  //responsive: ["xxl", "xl", "lg", "md", "sm", "xs"],
   const columns = [
+    { title: "Id", key: "index", render: (text, record, index) => index + 1 },
     {
       // title: "Patient Name",
       title: <Typography.Text>Patient Name</Typography.Text>,
@@ -146,7 +195,6 @@ const AddShipment = () => {
       sorter: () => {},
     },
     {
-      // title: "Next Shipment Date",
       title: <Typography.Text>Next Shipment Date</Typography.Text>,
       dataIndex: "nextDeliveryDate",
       className: "text-clip",
@@ -187,24 +235,33 @@ const AddShipment = () => {
       key: "operation",
       render: (_, record) => {
         return (
-          <span>
+          <span className="m-2 flex flex-col lg:flex-row gap-2">
             <Typography.Link
               onClick={() => edit(record)}
               style={{
                 marginRight: 8,
               }}
             >
-              Edit
+              <EditOutlined
+                style={{
+                  fontSize: 25,
+                }}
+              />
             </Typography.Link>
+            <ToastContainer />
             <Typography.Link
-              //disabled={editingKey !== ""}
               onClick={() => deleteShipmentRow(record)}
               style={{
                 marginRight: 8,
               }}
             >
-              Delete
+              <DeleteOutlined
+                style={{
+                  fontSize: 25,
+                }}
+              />
             </Typography.Link>
+            <ToastContainer />
           </span>
         );
       },
@@ -240,9 +297,61 @@ const AddShipment = () => {
     });
   };
 
+  const handleClose = () => {
+    setOpen(false);
+  };
+  const handleAgree = async () => {
+    setOpen(false);
+    try {
+      const response = await deleteShipment({
+        _id: deleteRecord._id,
+      });
+      if (response.data.status === 200) {
+        toast.success(response.data.message, {
+          position: "top-right",
+          onClose: () => {
+            dispatch(toastAction(""));
+          },
+          autoClose: 2000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "light",
+        });
+      } else {
+        toast.info(response.data.message, {
+          position: "top-right",
+          onClose: () => {
+            dispatch(toastAction(""));
+          },
+          autoClose: 2000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "light",
+        });
+      }
+    } catch (error) {
+      console.log("Error while Getting AllMedication: ", error);
+    }
+
+    try {
+      const response = await getShipment(shipmentPayload);
+      dataSource = [];
+      setData(response.data.data.data);
+      setTotalData(response.data.data.recordsTotal);
+    } catch (error) {
+      console.log("Error while Getting getShipment: ", error);
+    }
+  };
+
   return (
     <>
-      <div className="relative p-2 w-full h-full z-0 flex flex-col justify-center items-center ">
+      <div className="relative p-2 w-full h-full z-0 flex flex-col justify-center items-center  ">
         <h2 className="w-full text-4xl p-2 ">Add Shipment</h2>
         <div className="w-full p-2 mb-1 h-fit gap-2 grid grid-cols-1 sm:grid-cols-2">
           <div className=" justify-self-start self-center">
@@ -259,6 +368,7 @@ const AddShipment = () => {
           >
             <Link to="/addshipment/newshipment">ADD</Link>
           </Button>
+          <ToastContainer />
         </div>
         <Form className="inline-block p-2" form={form} component={false}>
           <Table
@@ -270,324 +380,57 @@ const AddShipment = () => {
             size="large"
             pagination={false}
             onChange={handleChange}
-           
           />
+          <Column></Column>
           <Pagination
             showSizeChanger
             onChange={onShowSizeChange}
             defaultCurrent={1}
             total={totalData}
-            pageSizeOptions={[10, 20, 30, 40]}
+            pageSizeOptions={Array(Math.ceil(totalData / 10))
+              .fill()
+              .map((_, index) => (index + 1) * 10)}
           />
+          <ToastContainer />
         </Form>
+        <Dialog
+          open={open}
+          onClose={handleClose}
+          aria-labelledby="alert-dialog-title"
+          aria-describedby="alert-dialog-description"
+        >
+          <DialogTitle id="alert-dialog-title">{"Delete"}</DialogTitle>
+          <DialogContent>
+            <DialogContentText id="alert-dialog-description">
+              <div className="h-fit p-2 gap-2 flex flex-col place-items-center">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  strokeWidth={1.5}
+                  stroke="currentColor"
+                  className="w-6 h-6"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M6 18L18 6M6 6l12 12"
+                  />
+                </svg>
+                <p>Are you sure want to delete this shipment?</p>
+              </div>
+            </DialogContentText>
+          </DialogContent>
+          <DialogActions>
+            <ButtonMI onClick={handleClose}>Cancle</ButtonMI>
+            <ButtonMI onClick={handleAgree} autoFocus>
+              Delete
+            </ButtonMI>
+          </DialogActions>
+        </Dialog>
       </div>
     </>
   );
 };
 
 export default AddShipment;
-
-//rowKey={(data) => data._id}
-
-// pagination={{
-//   // position: ["bottomLeft"],
-
-//   pageSize: 20,
-//   //pageSizeOptions: [10, 20, 30, 40],
-//   responsive: true,
-//   defaultCurrent: 1,
-//   total: 18,
-//   showSizeChanger: true,
-//   onChange: onShowSizeChange,
-// }}
-
-// setData([
-//   {
-//     _id: "63c53485b3ecf274fc709002",
-//     patinetName: "Shane",
-//     ownerName: "Jay Rana",
-//     medicationName: "Hello Medication",
-//     deliveryDate: "2022-11-10T18:30:00Z",
-//     nextDeliveryDate: "2022-11-10T18:30:00Z",
-//     trackUrl: "test.com",
-//     dosage: "2",
-//     addressLine: "Nnnn,,Nn,California,12344",
-//     addressLine1: "Nnnn",
-//     pincode: "12344",
-//     addressLine2: "",
-//     city: "Nn",
-//     state: "California",
-//   },
-//   {
-//     _id: "63c159ceb3ecf274fc708fff",
-//     patinetName: "Mask",
-//     ownerName: "Rohan Makwana",
-//     medicationName: "Meta 01",
-//     deliveryDate: "2023-01-05T11:21:59Z",
-//     nextDeliveryDate: "2023-01-05T11:21:59Z",
-//     trackUrl: "test.abc.com",
-//     dosage: "2",
-//     addressLine: "test,address,Ahmedabad ,Delaware,12345",
-//     addressLine1: "test",
-//     pincode: "12345",
-//     addressLine2: "address",
-//     city: "Ahmedabad ",
-//     state: "Delaware",
-//   },
-//   {
-//     _id: "63c1404eb3ecf274fc708ffe",
-//     patinetName: "Mask",
-//     ownerName: "Rohan Makwana",
-//     medicationName: "Meta 01",
-//     deliveryDate: "2022-02-17T11:24:47Z",
-//     nextDeliveryDate: "2023-01-13T11:28:00Z",
-//     trackUrl: "test.abc.com",
-//     dosage: "2",
-//     addressLine: "test,address,Ahmedabad ,Delaware,12345",
-//     addressLine1: "test",
-//     pincode: "12345",
-//     addressLine2: "address",
-//     city: "Ahmedabad ",
-//     state: "Delaware",
-//   },
-//   {
-//     _id: "63c1321fb3ecf274fc708ffd",
-//     patinetName: "GG",
-//     ownerName: "Joseph Sean",
-//     medicationName: "Metabolic",
-//     deliveryDate: "2023-01-11T11:22:53Z",
-//     nextDeliveryDate: "2023-01-11T11:22:53Z",
-//     trackUrl: "test.abc.com",
-//     dosage: "2",
-//     addressLine: "11, Happy street ,,Naples ,Florida,38100",
-//     addressLine1: "11, Happy street ",
-//     pincode: "38100",
-//     addressLine2: "",
-//     city: "Naples ",
-//     state: "Florida",
-//   },
-//   {
-//     _id: "6385e58a673b9e3583c17a58",
-//     patinetName: "Mask",
-//     ownerName: "Rohan Makwana",
-//     medicationName: "Meta 01",
-//     deliveryDate: "2022-11-30T10:57:07Z",
-//     nextDeliveryDate: "2022-12-01T10:57:09Z",
-//     trackUrl: "test.abc.com",
-//     dosage: "1",
-//     addressLine: "test,address,Ahmedabad ,Delaware,12345",
-//     addressLine1: "test",
-//     pincode: "12345",
-//     addressLine2: "address",
-//     city: "Ahmedabad ",
-//     state: "Delaware",
-//   },
-//   {
-//     _id: "6385e56d673b9e3583c17a57",
-//     patinetName: "yup",
-//     ownerName: "harsh soni",
-//     medicationName: "Metacine",
-//     deliveryDate: "2022-11-22T10:56:37Z",
-//     nextDeliveryDate: "2022-11-30T10:56:39Z",
-//     trackUrl: "test.com",
-//     dosage: "2",
-//     addressLine: "dsgdfgf,,,California,45568",
-//     addressLine1: "dsgdfgf",
-//     pincode: "45568",
-//     addressLine2: "",
-//     city: "",
-//     state: "California",
-//   },
-//   {
-//     _id: "636df128fd325befe4b4ffea",
-//     patinetName: "lonely ",
-//     ownerName: "Darshit Anjaria",
-//     medicationName: "Metacine",
-//     deliveryDate: "2022-11-02T06:52:18Z",
-//     nextDeliveryDate: "2022-11-03T06:52:19Z",
-//     trackUrl: "test.com",
-//     dosage: "6",
-//     addressLine: "law garden,,ahmedabad,Florida,43435",
-//     addressLine1: "law garden",
-//     pincode: "43435",
-//     addressLine2: "",
-//     city: "ahmedabad",
-//     state: "Florida",
-//   },
-//   {
-//     _id: "636df11dfd325befe4b4ffe9",
-//     patinetName: "lonely ",
-//     ownerName: "Darshit Anjaria",
-//     medicationName: "Metacine",
-//     deliveryDate: "2022-11-01T06:52:06Z",
-//     nextDeliveryDate: "2022-11-02T06:52:08Z",
-//     trackUrl: "test.com",
-//     dosage: "2",
-//     addressLine: "law garden,,ahmedabad,Florida,43435",
-//     addressLine1: "law garden",
-//     pincode: "43435",
-//     addressLine2: "",
-//     city: "ahmedabad",
-//     state: "Florida",
-//   },
-//   {
-//     _id: "636df110fd325befe4b4ffe8",
-//     patinetName: "lonely ",
-//     ownerName: "Darshit Anjaria",
-//     medicationName: "Metacine",
-//     deliveryDate: "2022-11-18T06:51:52Z",
-//     nextDeliveryDate: "2022-11-19T06:51:55Z",
-//     trackUrl: "test.com",
-//     dosage: "2",
-//     addressLine: "law garden,,ahmedabad,Florida,43435",
-//     addressLine1: "law garden",
-//     pincode: "43435",
-//     addressLine2: "",
-//     city: "ahmedabad",
-//     state: "Florida",
-//   },
-//   {
-//     _id: "636df0eefd325befe4b4ffe6",
-//     patinetName: "lonely ",
-//     ownerName: "Darshit Anjaria",
-//     medicationName: "Metacine",
-//     deliveryDate: "2022-02-17T11:24:47Z",
-//     nextDeliveryDate: "2023-01-13T11:28:00Z",
-//     trackUrl: "test.abc.com",
-//     dosage: "2",
-//     addressLine: "law garden,,ahmedabad,Florida,43435",
-//     addressLine1: "law garden",
-//     pincode: "43435",
-//     addressLine2: "",
-//     city: "ahmedabad",
-//     state: "Florida",
-//   },
-//   {
-//     _id: "636c97708de6475519907662",
-//     patinetName: "Aa",
-//     ownerName: "Rohan Makwana",
-//     medicationName: "NEW",
-//     deliveryDate: "2022-11-11T06:16:58Z",
-//     nextDeliveryDate: "2022-11-30T06:17:07Z",
-//     trackUrl: "test.com",
-//     dosage: "2",
-//     addressLine: "agile,nehrunagar,Ahmedabad ,Indiana,12345",
-//     addressLine1: "agile",
-//     pincode: "12345",
-//     addressLine2: "nehrunagar",
-//     city: "Ahmedabad ",
-//     state: "Indiana",
-//   },
-//   {
-//     _id: "636b6bc0e4c05eeaa583556c",
-//     patinetName: "Aa",
-//     ownerName: "Rohan Makwana",
-//     medicationName: "NEW",
-//     deliveryDate: "2022-11-10T08:58:28Z",
-//     nextDeliveryDate: "2022-11-12T08:58:36Z",
-//     trackUrl: "vetbox.com",
-//     dosage: "2 per day",
-//     addressLine: "agile,nehrunagar,Ahmedabad ,Indiana,12345",
-//     addressLine1: "agile",
-//     pincode: "12345",
-//     addressLine2: "nehrunagar",
-//     city: "Ahmedabad ",
-//     state: "Indiana",
-//   },
-//   {
-//     _id: "636b536ae4c05eeaa5835569",
-//     patinetName: "Jokh",
-//     ownerName: "Hhh Yyy",
-//     medicationName: "NEW",
-//     deliveryDate: "2022-11-12T07:14:42Z",
-//     nextDeliveryDate: "2022-11-14T07:14:44Z",
-//     trackUrl: "www.track.com",
-//     dosage: "5mg",
-//     addressLine: "aaa,hhh,Jjj,Connecticut,23222",
-//     addressLine1: "aaa",
-//     pincode: "23222",
-//     addressLine2: "hhh",
-//     city: "Jjj",
-//     state: "Connecticut",
-//   },
-//   {
-//     _id: "636b535be4c05eeaa5835568",
-//     patinetName: "Jokh",
-//     ownerName: "Hhh Yyy",
-//     medicationName: "NEW",
-//     deliveryDate: "2022-11-10T07:14:29Z",
-//     nextDeliveryDate: "2022-11-12T07:14:31Z",
-//     trackUrl: "vetbox.com",
-//     dosage: "5mg",
-//     addressLine: "aaa,hhh,Jjj,Connecticut,23222",
-//     addressLine1: "aaa",
-//     pincode: "23222",
-//     addressLine2: "hhh",
-//     city: "Jjj",
-//     state: "Connecticut",
-//   },
-//   {
-//     _id: "636b534ce4c05eeaa5835567",
-//     patinetName: "Jokh",
-//     ownerName: "Hhh Yyy",
-//     medicationName: "NEW",
-//     deliveryDate: "2022-11-04T07:14:15Z",
-//     nextDeliveryDate: "2022-11-06T07:14:17Z",
-//     trackUrl: "vetbox.com",
-//     dosage: "5mg",
-//     addressLine: "aaa,hhh,Jjj,Connecticut,23222",
-//     addressLine1: "aaa",
-//     pincode: "23222",
-//     addressLine2: "hhh",
-//     city: "Jjj",
-//     state: "Connecticut",
-//   },
-//   {
-//     _id: "636b533fe4c05eeaa5835566",
-//     patinetName: "Jokh",
-//     ownerName: "Hhh Yyy",
-//     medicationName: "NEW",
-//     deliveryDate: "2022-11-04T07:14:01Z",
-//     nextDeliveryDate: "2022-11-05T07:14:03Z",
-//     trackUrl: "vetbox.com",
-//     dosage: "5mg",
-//     addressLine: "aaa,hhh,Jjj,Connecticut,23222",
-//     addressLine1: "aaa",
-//     pincode: "23222",
-//     addressLine2: "hhh",
-//     city: "Jjj",
-//     state: "Connecticut",
-//   },
-//   {
-//     _id: "636a298e9cb2c77198850054",
-//     patinetName: "Tommie",
-//     ownerName: "Sam Miller ",
-//     medicationName: "NEW",
-//     deliveryDate: "2022-11-05T10:03:51Z",
-//     nextDeliveryDate: "2022-11-06T10:03:53Z",
-//     trackUrl: "www.track.com",
-//     dosage: "5mg",
-//     addressLine: "new,address ,Ahmedabad ,Indiana,54321",
-//     addressLine1: "new",
-//     pincode: "54321",
-//     addressLine2: "address ",
-//     city: "Ahmedabad ",
-//     state: "Indiana",
-//   },
-//   {
-//     _id: "636a1c8d9cb2c77198850053",
-//     patinetName: "Ww",
-//     ownerName: "Sam Miller ",
-//     medicationName: "NEW",
-//     deliveryDate: "2022-11-03T09:08:19Z",
-//     nextDeliveryDate: "2022-11-21T09:08:22Z",
-//     trackUrl: "test.comw",
-//     dosage: "2",
-//     addressLine: "new,address ,Ahmedabad ,Indiana,54321",
-//     addressLine1: "new",
-//     pincode: "54321",
-//     addressLine2: "address ",
-//     city: "Ahmedabad ",
-//     state: "Indiana",
-//   },
-// ]);

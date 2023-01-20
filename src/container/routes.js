@@ -9,7 +9,6 @@ const Layout = lazy(() => import("../components/layout/index"));
 const SignIn = lazy(() => import("../pages/SignIn/index"));
 const ForgotPassword = lazy(() => import("../components/auth/ForgotPassword"));
 const Dashboard = lazy(() => import("../pages/Dashboard"));
-const MyAccount = lazy(() => import("../pages/MyAccount"));
 
 const Routing = () => {
   return (
@@ -25,8 +24,7 @@ const Routing = () => {
         }
       >
         <Route index path="/dashboard" element={<Dashboard />} />
-        <Route path="/" element={<Navigate replace to="/" />} />
-        <Route path="/my-account" element={<MyAccount />} />
+        <Route index path="/" element={<Dashboard />} />
 
         <Route path="/addshipment" element={<AddShipment />} />
         <Route path="/addshipment/newshipment" element={<NewShipment />} />

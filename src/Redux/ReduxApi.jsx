@@ -14,14 +14,14 @@ export const userAPI = createApi({
       return headers;
     },
   }),
-  tagTypes: ["userData"],
+  tagTypes: ["userData", "dashboard"],
   endpoints: (builder) => ({
     getDashboardata: builder.mutation({
       query: () => ({
         url: "/dashboard",
         method: "POST",
       }),
-      invalidatesTags: ["userData"],
+      invalidatesTags: ["dashboard"],
     }),
 
     getShipment: builder.mutation({
@@ -43,8 +43,7 @@ export const userAPI = createApi({
 
       //     return shipment;
       //   });
-      //   return data;
-      // },
+      //   return data;       // },
       invalidatesTags: ["userData"],
     }),
 

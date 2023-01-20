@@ -1,26 +1,29 @@
 import React from "react";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import axios from "axios";
 import { UserOutlined } from "@ant-design/icons";
-import { Button, Input, notification, Form } from "antd";
+import { Button, Input, Form } from "antd";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 import { FORGOT_PASSWORD } from "../../constants/index";
 
 const ForgotPassword = () => {
-  const [api, contextHolder] = notification.useNotification();
+  //  const [api, contextHolder] = notification.useNotification();
 
+  const formRef = useRef();
   const [email, setEmail] = useState("");
 
   //NOTE: Notifications Banner
-  const openNotificationWithIcon = (notificationData) => {
-    console.log(notificationData);
-    if (notificationData.type !== "") {
-      api[notificationData.type]({
-        message: notificationData.message,
-        description: notificationData.description || notificationData.message,
-      });
-    }
-  };
+  // const openNotificationWithIcon = (notificationData) => {
+  //   console.log(notificationData);
+  //   if (notificationData.type !== "") {
+  //     api[notificationData.type]({
+  //       message: notificationData.message,
+  //       description: notificationData.description || notificationData.message,
+  //     });
+  //   }
+  // };
 
   //NOTE: Handleing password reset url and notification
 
@@ -29,23 +32,47 @@ const ForgotPassword = () => {
       const response = await axios.post(FORGOT_PASSWORD, {
         email: values.email,
       });
-      console.log(response.data);
+     // console.log(response.data);
 
       if (response.data.status === 200) {
-        openNotificationWithIcon({
-          type: "success",
-          message: "Success",
-          description: response.data.message,
+        // openNotificationWithIcon({
+        //   type: "success",
+        //   message: "Success",
+        //   description: response.data.message,
+        // });
+        toast.success(response.data.message, {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "light",
+        });
+        formRef?.current.setFieldsValue({
+          email: "",
         });
       }
     } catch (error) {
       console.log(error.response);
       if (error.response) {
         if (error.response.data.status === 400) {
-          openNotificationWithIcon({
-            type: "warning",
-            message: "Warning",
-            description: error.response.data.message,
+          // openNotificationWithIcon({
+          //   type: "warning",
+          //   message: "Warning",
+          //   description: error.response.data.message,
+          // });
+
+          toast.warn(error.response.data.message, {
+            position: "top-right",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "light",
           });
         }
       } else if (error.request) {
@@ -71,12 +98,13 @@ const ForgotPassword = () => {
   return (
     <>
       <section className="h-screen w-screen flex justify-center items-center bg-neutral-200 relative">
-        {contextHolder}
+        {/* {contextHolder} */}
         <div className="bg-white flex flex-col h-fit w-fit rounded-md justify-center items-center shadow-lg">
           <p className="text-xl text-center p-4 uppercase text-black">
             Forget Password
           </p>
           <Form
+            ref={formRef}
             name="basic"
             className="login-form shadow-md p-4"
             initialValues={{
@@ -86,7 +114,6 @@ const ForgotPassword = () => {
             onFinishFailed={onFinishFailed}
             autoComplete="off"
           >
-            
             <Form.Item
               label="Email"
               name="email"
@@ -122,6 +149,7 @@ const ForgotPassword = () => {
             >
               SUBMIT
             </Button>
+            <ToastContainer />
           </Form>
         </div>
       </section>

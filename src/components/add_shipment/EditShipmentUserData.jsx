@@ -12,6 +12,9 @@ import {
   useUpdateShipmentMutation,
 } from "../../Redux/ReduxApi";
 
+import { useDispatch } from "react-redux";
+import { toastAction } from "../../Redux/commonSlice";
+
 import dayjs from "dayjs";
 import timezone from "dayjs/plugin/timezone";
 import utc from "dayjs/plugin/utc";
@@ -19,12 +22,13 @@ dayjs.extend(utc);
 dayjs.extend(timezone);
 dayjs.tz.setDefault("Asia/Kolkata");
 
-const dateFormat = "DD/MM/YYYY";
+const dateFormat = "MM/DD/YYYY";
 
 let dispayEditFrom;
 let patientNames = [];
 
 const EditShipmentUserData = () => {
+  const dispatch = useDispatch();
   const { id } = useParams();
   const navigate = useNavigate();
 
@@ -42,7 +46,8 @@ const EditShipmentUserData = () => {
   const formRef = useRef(null);
 
   useEffect(() => {
-    const getShipmentDetail = async () => {
+    const getData = async () => {
+      // NOTE: ShipmentDetail
       try {
         const response = await ShipmentDetail({
           _id: id,
@@ -66,19 +71,54 @@ const EditShipmentUserData = () => {
         console.log("Error while Getting approvedPatientList : ", error);
       }
     };
-    getShipmentDetail();
+    getData();
 
-
-   
-
-
+    return () => {};
   }, [ShipmentDetail, approvedPatientList, id]);
 
-  // NOTE: Patient Medications and Address
+  useEffect(() => {
+    const getData = async (patientId) => {
+      //NOTE:  All Medications
 
+      try {
+        const response = await AllMedication({
+          _id: patientId,
+        });
+        if (response.data.data.length > 0) {
+          setAM(response.data.data);
+        }
+      } catch (error) {
+        console.log("Error while Getting AllMedication: ", error);
+      }
+
+      // NOTE:  Patient Address
+      try {
+        const response = await PatientAddress({
+          length: 10000,
+          patientId: patientId,
+          start: 0,
+        });
+
+        if (response.data.data.length > 0) {
+          setPAD(response.data.data);
+        }
+      } catch (error) {
+        console.log("Error while Getting PatientAddress : ", error);
+      }
+    };
+
+    if (Object.keys(sd).length > 0) {
+      getData(sd.patientId);
+    }
+  }, [AllMedication, PatientAddress, sd]);
+
+  //  Get Patient Medications and Address According to the options Selected
   const getMedicationAndAddress = async (patientId) => {
     setAM([]);
     setPAD([]);
+
+    //NOTE:  All Medications
+
     try {
       const response = await AllMedication({
         _id: patientId,
@@ -90,6 +130,7 @@ const EditShipmentUserData = () => {
       console.log("Error while Getting AllMedication: ", error);
     }
 
+    // NOTE:  Patient Address
     try {
       const response = await PatientAddress({
         length: 10000,
@@ -109,6 +150,8 @@ const EditShipmentUserData = () => {
     formRef.current?.setFieldsValue({
       medicationName: "",
       patientAddress: "",
+      deliveryDate: "",
+      nextDeliveryDate: "",
     });
     const selectedPatientName = apList.find(
       (patient) => patient.name === value
@@ -119,21 +162,28 @@ const EditShipmentUserData = () => {
   // const onFormLayoutChange = function (changedFields, allFields) {};
 
   const onFinish = async (values) => {
-    console.log();
+    const payload = {
+      patientId: sd.patientId,
+      medicationId: sd.medicationId,
+      addressId: sd.addressId,
+      deliveryDate: new Date(values.deliveryDate.format()).toISOString(),
+      nextDeliveryDate: new Date(
+        values.nextDeliveryDate.format()
+      ).toISOString(),
+      dosage: values.dosage,
+      trackUrl: values.trackUrl,
+      _id: id,
+    };
+
+    // console.log(payload);
 
     try {
-      const response = await updateShipment({
-        patientId: sd.patientId,
-        medicationId: sd.medicationId,
-        addressId: sd.addressId,
-        deliveryDate: new Date(values.deliveryDate.format()).toISOString(),
-        nextDeliveryDate: new Date(values.deliveryDate.format()).toISOString(),
-        dosage: values.dosage,
-        trackUrl: values.trackUrl,
-        _id: id,
-      });
-      console.log(response.data.data);
-      navigate("/addshipment");
+      const response = await updateShipment(payload);
+
+      if (response.data.status === 200) {
+        dispatch(toastAction(response.data.message));
+        navigate("/addshipment");
+      }
     } catch (error) {
       console.log("Error while Getting AllMedication: ", error);
     }
@@ -154,10 +204,16 @@ const EditShipmentUserData = () => {
           value={`${patient.name}`}
         >{`${patient.name}`}</Select.Option>
       );
-    })
+    });
 
-    const dDate = dayjs(sd.deliveryDate, `${"YYYY-MM-DD"}T${"HH:mm:ss"}Z`);
-    const ndDate = dayjs(sd.nextDeliveryDate, `${"YYYY-MM-DD"}T${"HH:mm:ss"}Z`);
+    // //2023-01-17T09:01:39Z
+    // console.log(dayjs("2023-01-17T09:01:39Z").format(`${"DD/MM/YYYY"}`));
+
+    // const dDate = dayjs(sd.deliveryDate, `${"YYYY-MM-DD"}T${"HH:mm:ss"}Z`);
+    // const ndDate = dayjs(sd.nextDeliveryDate, `${"YYYY-MM-DD"}T${"HH:mm:ss"}Z`);
+
+    const dDate = dayjs(sd.deliveryDate).format(dateFormat);
+    const ndDate = dayjs(sd.nextDeliveryDate).format(dateFormat);
 
     if ((dDate && ndDate) !== undefined && (dDate && ndDate) !== null) {
       // console.log( dayjs(dDate.format(`${"DD/MM/YYYY"}`), dateFormat));
@@ -168,8 +224,8 @@ const EditShipmentUserData = () => {
           initialValues={{
             patinetName: sd.patinetName,
             medicationName: sd.medicationName,
-            deliveryDate: dayjs(dDate.format(`${"DD/MM/YYYY"}`)),
-            nextDeliveryDate: dayjs(ndDate.format(`${"DD/MM/YYYY"}`)),
+            deliveryDate: dayjs(dDate, dateFormat),
+            nextDeliveryDate: dayjs(ndDate, dateFormat),
             trackUrl: sd.trackUrl,
             dosage: sd.dosage,
             patientAddress: `${sd.addressLine1},${sd.addressLine2}`,
@@ -189,7 +245,15 @@ const EditShipmentUserData = () => {
           <div className="grid md:grid-cols-2  gap-3">
             <div className="flex flex-col ">
               <label htmlFor="patinetName">Patient Name</label>
-              <Form.Item name="patinetName">
+              <Form.Item
+                name="patinetName"
+                rules={[
+                  {
+                    required: true,
+                    message: "Select Patient Name",
+                  },
+                ]}
+              >
                 <Select onChange={handleSelecteName}>
                   {patientNames.length > 0 ? (
                     patientNames.map((patient, i) => {
@@ -208,7 +272,15 @@ const EditShipmentUserData = () => {
             </div>
             <div className="flex flex-col ">
               <label htmlFor="medicationName">Medication Name </label>
-              <Form.Item name="medicationName">
+              <Form.Item
+                name="medicationName"
+                rules={[
+                  {
+                    required: true,
+                    message: "Select Medication Name",
+                  },
+                ]}
+              >
                 <Select>
                   {am.length > 0 ? (
                     am.map((patient, i) => {
@@ -230,13 +302,29 @@ const EditShipmentUserData = () => {
           <div className="grid md:grid-cols-2  gap-3">
             <div className="flex flex-col ">
               <label htmlFor="deliveryDate">Shipment Date</label>
-              <Form.Item name="deliveryDate">
+              <Form.Item
+                name="deliveryDate"
+                rules={[
+                  {
+                    required: true,
+                    message: "Choose Delivery Date",
+                  },
+                ]}
+              >
                 <DatePicker format={dateFormat} />
               </Form.Item>
             </div>
             <div className="flex flex-col ">
               <label htmlFor="nextDeliveryDate">Next Shipment Date</label>
-              <Form.Item name="nextDeliveryDate">
+              <Form.Item
+                name="nextDeliveryDate"
+                rules={[
+                  {
+                    required: true,
+                    message: "Choose Next Delivery Date",
+                  },
+                ]}
+              >
                 <DatePicker format={dateFormat} />
               </Form.Item>
             </div>
@@ -245,20 +333,44 @@ const EditShipmentUserData = () => {
           <div className="grid md:grid-cols-2  gap-3">
             <div className="flex flex-col ">
               <label htmlFor="trackUrl">Track URL</label>
-              <Form.Item name="trackUrl">
+              <Form.Item
+                name="trackUrl"
+                rules={[
+                  {
+                    required: true,
+                    message: "Track URL is required",
+                  },
+                ]}
+              >
                 <Input />
               </Form.Item>
             </div>
             <div className="flex flex-col ">
               <label htmlFor="dosage">Dosage</label>
-              <Form.Item name="dosage">
+              <Form.Item
+                name="dosage"
+                rules={[
+                  {
+                    required: true,
+                    message: "Doges is required",
+                  },
+                ]}
+              >
                 <Input />
               </Form.Item>
             </div>
           </div>
 
           <label htmlFor="patientAddress">Patient Address</label>
-          <Form.Item name="patientAddress">
+          <Form.Item
+            name="patientAddress"
+            rules={[
+              {
+                required: true,
+                message: "Select Patient Address",
+              },
+            ]}
+          >
             <Select>
               {pad.length > 0 ? (
                 pad.map((patient, i) => {

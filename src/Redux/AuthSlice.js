@@ -18,7 +18,15 @@ const initialState = {
   userData: {},
 };
 
-
+const loadFromLocalStorage = (data) => {
+  try {
+    const result = data;
+    return result ? JSON.parse(result) : undefined;
+  } catch (e) {
+    console.error(e);
+    return undefined;
+  }
+};
 
 export const loginAction = (data) => ({
   type: "API",
@@ -66,8 +74,8 @@ const loginSlice = createSlice({
       }
 
       state.userData = action.payload;
-      state.token = action.payload.data.accessToken;
       state.isLoggedIn = true;
+      state.token = loadFromLocalStorage(localStorage.getItem(LS_AUTHTOKEN));
     });
     builder.addCase(LOGIN_F, (state, action) => {
       // remove items on logout

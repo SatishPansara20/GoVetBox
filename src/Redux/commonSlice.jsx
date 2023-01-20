@@ -2,6 +2,8 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
   token: "",
+  sliderCollapsed: false,
+  toastData: "",
   updateShipmentPayload: [],
 };
 
@@ -38,6 +40,14 @@ const commonSlice = createSlice({
         };
       },
     },
+
+    toggleSlider: (state) => {
+      state.sliderCollapsed = !state.sliderCollapsed;
+    },
+
+    toastAction: (state, action) => {
+      state.toastData = action.payload;
+    },
   },
   // extraReducers: (builder) => {
   //   builder.addCase();
@@ -45,5 +55,8 @@ const commonSlice = createSlice({
   // },
 });
 
-export const { addShipmentdataToCommonSlice } = commonSlice.actions;
+export const valueofsider = (state) => state.common.sliderCollapsed;
+export const toastData = (state) => state.common.toastData;
+export const { addShipmentdataToCommonSlice, toggleSlider, toastAction } =
+  commonSlice.actions;
 export default commonSlice.reducer;

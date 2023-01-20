@@ -1,13 +1,16 @@
 import React, { useRef } from "react";
 import { useEffect } from "react";
 import { useState } from "react";
-
+import { useNavigate } from "react-router-dom";
 import {
   useGetApprovedPatientListMutation,
   useGetPatientAddressURLMutation,
   useGetAllMedicationURLMutation,
-  useAddShipmentMutation
+  useAddShipmentMutation,
 } from "../../Redux/ReduxApi";
+import { useDispatch } from "react-redux";
+import { toastAction } from "../../Redux/commonSlice";
+
 import { Button, DatePicker, Form, Input, Select } from "antd";
 
 import dayjs from "dayjs";
@@ -22,6 +25,9 @@ const dateFormate = "MM/DD/YYYY";
 let patientNames = [];
 
 const NewShipment = () => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
   const [approvedPatientList] = useGetApprovedPatientListMutation();
   const [PatientAddress] = useGetPatientAddressURLMutation();
   const [AllMedication] = useGetAllMedicationURLMutation();
@@ -38,8 +44,12 @@ const NewShipment = () => {
     const getData = async () => {
       try {
         const response = await approvedPatientList({ start: 0, length: 10000 });
-        if (response.data.data.data.length > 0) {
-          setAPList(response.data.data.data);
+        if (response.status === 401) {
+          alert(response.message);
+        } else {
+          if (response.data.data.data.length > 0) {
+            setAPList(response.data.data.data);
+          }
         }
       } catch (error) {
         console.log("Error while Getting approvedPatientList : ", error);
@@ -146,15 +156,13 @@ const NewShipment = () => {
       trackUrl: values.trackurl,
     };
 
-
     try {
       const response = await addShipment(payload);
-      console.log(response.data.data);
-     
+      dispatch(toastAction(response.data.message));
+      navigate("/addshipment");
     } catch (error) {
       console.log("Error while Getting AllMedication: ", error);
     }
-   
   };
 
   return (
@@ -178,7 +186,15 @@ const NewShipment = () => {
           <div className="grid md:grid-cols-2  gap-3">
             <div className="flex flex-col ">
               <label htmlFor="patientname">Patient Name</label>
-              <Form.Item name="patientname">
+              <Form.Item
+                name="patientname"
+                rules={[
+                  {
+                    required: true,
+                    message: "Select Patient Name",
+                  },
+                ]}
+              >
                 <Select onChange={handleSelecteName}>
                   {patientNames.length > 0 ? (
                     patientNames.map((patient, i) => {
@@ -197,7 +213,15 @@ const NewShipment = () => {
             </div>
             <div className="flex flex-col ">
               <label htmlFor="medicationname">Medication Name </label>
-              <Form.Item name="medicationname">
+              <Form.Item
+                name="medicationname"
+                rules={[
+                  {
+                    required: true,
+                    message: "Select Medication Name",
+                  },
+                ]}
+              >
                 <Select>
                   {am.length > 0 ? (
                     am.map((patient, i) => {
@@ -216,33 +240,78 @@ const NewShipment = () => {
             </div>
           </div>
 
-          <label htmlFor="shipmentdate">Shipment Date</label>
-          <Form.Item name="shipmentdate">
-            <DatePicker format={dateFormate} />
-          </Form.Item>
-
-          <label htmlFor="nextshipmentdate">Shipment Date</label>
-          <Form.Item name="nextshipmentdate">
-            <DatePicker disabledDate={disabledDate} format={dateFormate} />
-          </Form.Item>
+          <div className="grid md:grid-cols-2  gap-3">
+            <div className="flex flex-col ">
+              <label htmlFor="shipmentdate">Shipment Date</label>
+              <Form.Item
+                name="shipmentdate"
+                rules={[
+                  {
+                    required: true,
+                    message: "Choose Shipment Date",
+                  },
+                ]}
+              >
+                <DatePicker format={dateFormate} />
+              </Form.Item>
+            </div>
+            <div className="flex flex-col ">
+              <label htmlFor="nextshipmentdate">Shipment Date</label>
+              <Form.Item
+                name="nextshipmentdate"
+                rules={[
+                  {
+                    required: true,
+                    message: "Choose Next Shipment Date",
+                  },
+                ]}
+              >
+                <DatePicker disabledDate={disabledDate} format={dateFormate} />
+              </Form.Item>
+            </div>
+          </div>
 
           <div className="grid md:grid-cols-2  gap-3">
             <div className="flex flex-col ">
               <label htmlFor="trackurl">Track URL</label>
-              <Form.Item name="trackurl">
+              <Form.Item
+                name="trackurl"
+                rules={[
+                  {
+                    required: true,
+                    message: "Track URL is required",
+                  },
+                ]}
+              >
                 <Input />
               </Form.Item>
             </div>
             <div className="flex flex-col ">
               <label htmlFor="doges">Doges</label>
-              <Form.Item name="doges">
+              <Form.Item
+                name="doges"
+                rules={[
+                  {
+                    required: true,
+                    message: "Doges is required",
+                  },
+                ]}
+              >
                 <Input />
               </Form.Item>
             </div>
           </div>
 
           <label htmlFor="patientaddress">Patient Address</label>
-          <Form.Item name="patientaddress">
+          <Form.Item
+            name="patientaddress"
+            rules={[
+              {
+                required: true,
+                message: "Select Patient Address",
+              },
+            ]}
+          >
             <Select>
               {pad.length > 0 ? (
                 pad.map((patient, i) => {
