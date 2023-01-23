@@ -8,7 +8,7 @@ const Dashboard = () => {
     refetchOnMountOrArgChange: true,
   });
 
-  const delay = () => new Promise((res) => setTimeout(() => res(), 5000));
+  const delay = () => new Promise((res) => setTimeout(() => res(), 2000));
 
   const [cardContents, setCardContents] = useState({});
 
