@@ -58,6 +58,53 @@ const SideBar = () => {
     }
   }, [location, current]);
 
+  const [deviceSize, changeDeviceSize] = useState(window.innerWidth);
+  const [addflag, setAddFlag] = useState(true);
+  const [removeflag, setRemovesetFlag] = useState(false);
+
+  useEffect(() => {
+    const mainDivElement = document.getElementById("main-div");
+    const sidebarElement = document.getElementById("sidebar");
+
+    const divElement = document.createElement("div");
+
+    divElement.style.height = "10%";
+    divElement.style.width = "100%";
+    divElement.style.padding = "2%";
+    divElement.style.background = "#a8b2c0";
+    divElement.style.display = "flex";
+    divElement.style.justifyContent = "center";
+    divElement.style.alignItems = "center";
+
+    const pElement = document.createElement("p");
+    pElement.textContent = "Box";
+    pElement.style.fontSize = "xx-large";
+
+    divElement.appendChild(pElement);
+
+    const resizeW = () => changeDeviceSize(window.innerWidth);
+
+    window.addEventListener("resize", resizeW);
+    if (deviceSize < 760) {
+      if (removeflag) {
+        console.log("P got removed");
+        mainDivElement.removeChild(mainDivElement.children[0]);
+        console.log("After Remove", mainDivElement.children);
+        setAddFlag(true);
+        setRemovesetFlag(false);
+      }
+    } else {
+      if (addflag) {
+        console.log("P got added");
+        mainDivElement.insertBefore(divElement, sidebarElement);
+        console.log("After Adding", mainDivElement.children[0]);
+        setAddFlag(false);
+        setRemovesetFlag(true);
+      }
+    }
+    return () => window.removeEventListener("resize", resizeW);
+  }, [deviceSize, addflag, removeflag]);
+
   // const handleClick = (e) => {
   //   setCurrent(e.key);
   //   navigate(`/${e.key}`);
@@ -73,7 +120,6 @@ const SideBar = () => {
   return (
     <>
       <Sider
-        id="box-sider"
         ref={ref}
         trigger={null}
         breakpoint={"xl"}
@@ -82,26 +128,22 @@ const SideBar = () => {
         collapsed={collapsed}
         collapsedWidth={0}
       >
-        <div
-          id="box"
-          style={{
-            height: 32,
-            margin: 16,
-            background: "rgba(255, 255, 255, 0.945)",
-            textAlign: "center",
-            fontSize: 25,
-          }}
-        >
-          Box
+        <div id="main-div" className=" flex flex-col h-full bg-white">
+          <Menu
+            id="sidebar"
+            onSelect={onClick}
+            theme="dark"
+            style={{
+              flexGrow: 1,
+              flexShrink: 0,
+              flexBasis: "auto",
+            }}
+            // selectedKeys={[current]}
+            defaultSelectedKeys={["dashboard"]}
+            mode="inline"
+            items={items}
+          />
         </div>
-        <Menu
-          onSelect={onClick}
-          theme="dark"
-          // selectedKeys={[current]}
-          defaultSelectedKeys={["dashboard"]}
-          mode="inline"
-          items={items}
-        />
       </Sider>
     </>
   );

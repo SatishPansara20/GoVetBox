@@ -122,9 +122,12 @@ const NewShipment = () => {
   };
   const onFormLayoutChange = function (changedFields, allFields) {
     if (allFields[2].value !== null && allFields[2].value !== undefined) {
+      document.getElementById("nextDate").style.visibility = "visible";
       //console.log(allFields[2].value);
 
       disabledDate(allFields[2].value.format(`${"MM/DD/YYYY"}`));
+    } else {
+      document.getElementById("nextDate").style.visibility = "hidden";
     }
   };
 
@@ -252,11 +255,15 @@ const NewShipment = () => {
                   },
                 ]}
               >
-                <DatePicker format={dateFormate} />
+                <DatePicker className="w-full" format={dateFormate} />
               </Form.Item>
             </div>
-            <div className="flex flex-col ">
-              <label htmlFor="nextshipmentdate">Shipment Date</label>
+            <div
+              id="nextDate"
+              className=" flex flex-col "
+              style={{ visibility: "hidden" }}
+            >
+              <label htmlFor="nextshipmentdate">Next Shipment Date</label>
               <Form.Item
                 name="nextshipmentdate"
                 rules={[
@@ -266,7 +273,7 @@ const NewShipment = () => {
                   },
                 ]}
               >
-                <DatePicker disabledDate={disabledDate} format={dateFormate} />
+                <DatePicker className="w-full" disabledDate={disabledDate} format={dateFormate} />
               </Form.Item>
             </div>
           </div>
