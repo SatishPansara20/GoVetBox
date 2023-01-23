@@ -1,5 +1,4 @@
 import React from "react";
-//import {useEffect, useState } from "react";
 
 import { lazy } from "react";
 import { Outlet } from "react-router-dom";
@@ -15,7 +14,7 @@ const WebLayout = () => {
   return (
     <>
       <Layout className="h-screen w-full overflow-y-auto ">
-        <SideBar className/>
+        <SideBar className />
         <Layout className="relative site-layout h-screen flex-col ">
           <PageHeader />
           <Content className="block p-20 h-fit w-full flex-grow bg-gray-200 overflow-y-auto ">

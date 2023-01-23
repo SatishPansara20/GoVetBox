@@ -20,6 +20,8 @@ import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
 
 import { v4 as uuid } from "uuid";
 
+import { makeToast, useFetchData } from "../common/appcommonfunction/Fuctions";
+
 import ButtonMI from "@mui/material/Button";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
@@ -28,7 +30,6 @@ import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 
 import { toast } from "react-toastify";
-import { makeToast } from "../toast/fuctions";
 
 let dataSource = [];
 
@@ -41,6 +42,7 @@ const AddShipment = () => {
 
   const [getShipment] = useGetShipmentMutation();
   const [deleteShipment] = useDeleteShipmentMutation();
+  const responseData = useFetchData();
 
   const navigate = useNavigate();
 
@@ -75,6 +77,12 @@ const AddShipment = () => {
         shipmentPayload.dir !== undefined &&
         shipmentPayload.dir !== null
       ) {
+        const {
+          data: DDDAAA,
+          error,
+          isLoading,
+        } = responseData(getShipment, shipmentPayload);
+        console.log(DDDAAA, error, isLoading);
         try {
           const response = await getShipment(shipmentPayload, {
             refetchOnMountOrArgChange: true,
@@ -89,6 +97,14 @@ const AddShipment = () => {
         }
       } else {
         try {
+          const {
+            data: DDDAAA,
+            error,
+            isLoading,
+          } = responseData(getShipment, shipmentPayload);
+
+          console.log(DDDAAA, error, isLoading);
+
           const response = await getShipment({
             length: shipmentPayload.length,
             search: shipmentPayload.search,
@@ -110,7 +126,9 @@ const AddShipment = () => {
     if (receivedToastData !== "")
       makeToast(dispatch, receivedToastData, toast.success);
     getData();
-  }, [getShipment, shipmentPayload, dispatch, receivedToastData]);
+  }, [getShipment, shipmentPayload, dispatch, receivedToastData, responseData]);
+
+  useEffect(() => {}, []);
 
   if (data.length > 0) {
     //console.log(data.length);
@@ -136,6 +154,7 @@ const AddShipment = () => {
     setdeleteRecord(record);
   };
 
+  // Table Columns
   const columns = [
     { title: "Id", key: "index", render: (text, record, index) => index + 1 },
     {
@@ -288,34 +307,8 @@ const AddShipment = () => {
       });
       if (response.data.status === 200) {
         makeToast(dispatch, response.data.message, toast.success);
-        // toast.success(response.data.message, {
-        //   position: "top-right",
-        //   onClose: () => {
-        //     dispatch(toastAction(""));
-        //   },
-        //   autoClose: 2000,
-        //   hideProgressBar: false,
-        //   closeOnClick: true,
-        //   pauseOnHover: true,
-        //   draggable: true,
-        //   progress: undefined,
-        //   theme: "light",
-        // });
       } else {
         makeToast(dispatch, response.data.message, toast.info);
-        // toast.info(response.data.message, {
-        //   position: "top-right",
-        //   onClose: () => {
-        //     dispatch(toastAction(""));
-        //   },
-        //   autoClose: 2000,
-        //   hideProgressBar: false,
-        //   closeOnClick: true,
-        //   pauseOnHover: true,
-        //   draggable: true,
-        //   progress: undefined,
-        //   theme: "light",
-        // });
       }
     } catch (error) {
       console.log("Error while Getting AllMedication: ", error);
@@ -414,3 +407,12 @@ const AddShipment = () => {
 };
 
 export default AddShipment;
+
+//  try {
+//       const response = await getShipment(shipmentPayload);
+//       dataSource = [];
+//       setData(response.data.data.data);
+//       setTotalData(response.data.data.recordsTotal);
+//     } catch (error) {
+//       console.log("Error while Getting getShipment: ", error);
+//     }

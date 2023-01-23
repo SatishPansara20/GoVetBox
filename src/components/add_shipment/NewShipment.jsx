@@ -11,7 +11,8 @@ import {
 import { useDispatch } from "react-redux";
 import { toastAction } from "../../Redux/commonSlice";
 
-import { Button, DatePicker, Form, Input, Select } from "antd";
+import { Button, Form, Input, Select } from "antd";
+import { InputField, SelectField, DateField } from "../common/FormField/index";
 
 import dayjs from "dayjs";
 import timezone from "dayjs/plugin/timezone";
@@ -120,6 +121,7 @@ const NewShipment = () => {
       return current && current < dayjs(startDate, "MM/DD/YYYY").endOf("day");
     }
   };
+
   const onFormLayoutChange = function (changedFields, allFields) {
     if (allFields[2].value !== null && allFields[2].value !== undefined) {
       document.getElementById("nextDate").style.visibility = "visible";
@@ -188,7 +190,7 @@ const NewShipment = () => {
         >
           <div className="grid md:grid-cols-2  gap-3">
             <div className="flex flex-col ">
-              <label htmlFor="patientname">Patient Name</label>
+              {/* <label htmlFor="patientname">Patient Name</label>
               <Form.Item
                 name="patientname"
                 rules={[
@@ -212,10 +214,18 @@ const NewShipment = () => {
                     <Select.Option value="No Option">No Option</Select.Option>
                   )}
                 </Select>
-              </Form.Item>
+              </Form.Item> */}
+
+              <SelectField
+                id="patientname"
+                selectFieldLabelName="Patient Name"
+                message="Select Patient Name"
+                handleChange={handleSelecteName}
+                SelectFildValues={patientNames}
+              />
             </div>
             <div className="flex flex-col ">
-              <label htmlFor="medicationname">Medication Name </label>
+              {/* <label htmlFor="medicationname">Medication Name </label>
               <Form.Item
                 name="medicationname"
                 rules={[
@@ -239,13 +249,20 @@ const NewShipment = () => {
                     <Select.Option value="No Option">No Option</Select.Option>
                   )}
                 </Select>
-              </Form.Item>
+              </Form.Item> */}
+
+              <SelectField
+                id="medicationname"
+                selectFieldLabelName="Medication Name"
+                message="Select Medication Name"
+                SelectFildValues={am}
+              />
             </div>
           </div>
 
           <div className="grid md:grid-cols-2  gap-3">
             <div className="flex flex-col ">
-              <label htmlFor="shipmentdate">Shipment Date</label>
+              {/* <label htmlFor="shipmentdate">Shipment Date</label>
               <Form.Item
                 name="shipmentdate"
                 rules={[
@@ -256,14 +273,20 @@ const NewShipment = () => {
                 ]}
               >
                 <DatePicker className="w-full" format={dateFormate} />
-              </Form.Item>
+              </Form.Item> */}
+              <DateField
+                id="shipmentdate"
+                dateFieldLabelName="Shipment Date"
+                message="Choose Shipment Date"
+                dateFormate={dateFormate}
+              />
             </div>
             <div
               id="nextDate"
               className=" flex flex-col "
               style={{ visibility: "hidden" }}
             >
-              <label htmlFor="nextshipmentdate">Next Shipment Date</label>
+              {/* <label htmlFor="nextshipmentdate">Next Shipment Date</label>
               <Form.Item
                 name="nextshipmentdate"
                 rules={[
@@ -273,14 +296,26 @@ const NewShipment = () => {
                   },
                 ]}
               >
-                <DatePicker className="w-full" disabledDate={disabledDate} format={dateFormate} />
-              </Form.Item>
+                <DatePicker
+                  className="w-full"
+                  disabledDate={disabledDate}
+                  format={dateFormate}
+                />
+              </Form.Item> */}
+
+              <DateField
+                id="nextshipmentdate"
+                dateFieldLabelName="Next Shipment Date"
+                message="Choose Next Shipment Date"
+                disabledDate={disabledDate}
+                dateFormate={dateFormate}
+              />
             </div>
           </div>
 
           <div className="grid md:grid-cols-2  gap-3">
             <div className="flex flex-col ">
-              <label htmlFor="trackurl">Track URL</label>
+              {/* <label htmlFor="trackurl">Track URL</label>
               <Form.Item
                 name="trackurl"
                 rules={[
@@ -291,7 +326,16 @@ const NewShipment = () => {
                 ]}
               >
                 <Input />
-              </Form.Item>
+              </Form.Item> */}
+
+              <InputField
+                id="trackurl"
+                InputlabelName="Track URL"
+                type="text"
+                size="large"
+                message="Track URL is required"
+                placeholder="Enter the Track URL"
+              />
             </div>
             <div className="flex flex-col ">
               <label htmlFor="doges">Doges</label>
@@ -347,20 +391,3 @@ const NewShipment = () => {
 };
 
 export default NewShipment;
-
-// const getDateFormate = (a) => {
-//   const b = `${a.$d}`.split(" ");
-
-//   const formatter = new Intl.DateTimeFormat("en-IN", {
-//     year: "numeric",
-//     month: "2-digit",
-//     day: "2-digit",
-//   });
-//   const date = new Date(b[3], a.$M, a.$D);
-//   const result = formatter.format(date).split("/").join("-");
-//   console.log(`${result}T${b[4]}Z`); // outputs “01/03/2018”
-
-//   // console.log(`${b[3]}-${a.$M + 1}-${a.$D}T${b[4]}Z`);
-
-//   return result;
-// };

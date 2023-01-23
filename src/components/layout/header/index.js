@@ -6,7 +6,7 @@ import { useDispatch } from "react-redux";
 import { toggleSlider } from "../../../Redux/commonSlice";
 
 import { Breadcrumb, Dropdown, Button, Layout, theme } from "antd";
-
+import { MenuFoldOutlined } from "@ant-design/icons";
 import { LOGIN_F } from "../../../constants/index";
 
 const { Header } = Layout;
@@ -41,10 +41,6 @@ const PageHeader = () => {
     token: { colorBgContainer },
   } = theme.useToken();
 
-  // useEffect(() => {
-  //   //a fuction to change the pathnames according to the route object
-
-  // }, [id]);
   const changeThePathNames = (pathNames) => {
     pathNames = pathNames.map((nameofPath) => {
       const a = route.find((item) => item.name === nameofPath);
@@ -58,6 +54,8 @@ const PageHeader = () => {
   const onLogout = () => {
     dispatch({ type: LOGIN_F });
   };
+
+  // Action Items with Images Profile
   const items = [
     {
       key: "1",
@@ -89,22 +87,8 @@ const PageHeader = () => {
               <Button
                 className="trigger inline-block w-fit h-full justify-self-start mr-2 border-none"
                 onClick={hadleSidebarClick}
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  strokeWidth={1.5}
-                  stroke="black"
-                  className="w-6 h-6"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M10.5 6h9.75M10.5 6a1.5 1.5 0 11-3 0m3 0a1.5 1.5 0 10-3 0M3.75 6H7.5m3 12h9.75m-9.75 0a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m-3.75 0H7.5m9-6h3.75m-3.75 0a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m-9.75 0h9.75"
-                  />
-                </svg>
-              </Button>
+                icon={<MenuFoldOutlined />}
+              ></Button>
               <p className="w-fit text-4xl h-fit justify-self-center md:invisible">
                 Box
               </p>
@@ -156,64 +140,19 @@ const PageHeader = () => {
 
 export default PageHeader;
 
-// const heades = (
-//   <nav className="sticky flex flex-col h-full w-full top-0 left-0 right-0">
-//     <div className=" z-10  flex  items-center justify-between p-2  ">
-//       <Button
-//         className="trigger inline-block w-fit h-full justify-self-start mr-2 border-none"
-//         onClick={hadleSidebarClick}
-//       >
-//         <svg
-//           xmlns="http://www.w3.org/2000/svg"
-//           fill="none"
-//           viewBox="0 0 24 24"
-//           strokeWidth={1.5}
-//           stroke="black"
-//           className="w-6 h-6"
-//         >
-//           <path
-//             strokeLinecap="round"
-//             strokeLinejoin="round"
-//             d="M10.5 6h9.75M10.5 6a1.5 1.5 0 11-3 0m3 0a1.5 1.5 0 10-3 0M3.75 6H7.5m3 12h9.75m-9.75 0a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m-3.75 0H7.5m9-6h3.75m-3.75 0a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m-9.75 0h9.75"
-//           />
-//         </svg>
-//       </Button>
-//       <p className="w-fit text-4xl h-fit justify-self-center md:invisible">
-//         Box
-//       </p>
-//       <Dropdown
-//         className="bg-slate-700 h-fit justify-self-end w-fit"
-//         menu={{
-//           items,
-//         }}
-//         placement="bottomRight"
-//       >
-//         <div className="rounded-full inline-block ">log out</div>
-//       </Dropdown>
-//     </div>
-//     <div className="bg-white w-full shadow-md">
-//       <Breadcrumb className="text-blue-400">
-//         {pathNames.length > 0 ? (
-//           <Breadcrumb.Item>
-//             <Link to="/dashboard">Home</Link>
-//           </Breadcrumb.Item>
-//         ) : (
-//           <Breadcrumb.Item>Home</Breadcrumb.Item>
-//         )}
-//         {pathNames.map((name, i) => {
-//           const routeTo = `/${pathNames.slice(0, i + 1).join("/")}`;
-//           const isLast = i === pathNames.length - 1;
 
-//           return isLast ? (
-//             <Breadcrumb.Item key={i}>{name}</Breadcrumb.Item>
-//           ) : (
-//             <Breadcrumb.Item key={i}>
-//               <Link to={`${routeTo}`}>{name}</Link>
-//             </Breadcrumb.Item>
-//           );
-//         })}
-//       </Breadcrumb>
-//       ;
-//     </div>
-//   </nav>
-// );
+
+//  {/* <svg
+//                   xmlns="http://www.w3.org/2000/svg"
+//                   fill="none"
+//                   viewBox="0 0 24 24"
+//                   strokeWidth={1.5}
+//                   stroke="black"
+//                   className="w-6 h-6"
+//                 >
+//                   <path
+//                     strokeLinecap="round"
+//                     strokeLinejoin="round"
+//                     d="M10.5 6h9.75M10.5 6a1.5 1.5 0 11-3 0m3 0a1.5 1.5 0 10-3 0M3.75 6H7.5m3 12h9.75m-9.75 0a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m-3.75 0H7.5m9-6h3.75m-3.75 0a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m-9.75 0h9.75"
+//                   />
+//                 </svg> */}

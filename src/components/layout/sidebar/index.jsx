@@ -1,17 +1,15 @@
 import React from "react";
 import { useState, useEffect } from "react";
-import { useRef } from "react";
 
 import { useDispatch, useSelector } from "react-redux";
 import { toggleSlider, valueofsider } from "../../../Redux/commonSlice";
 
+import { useLocation, useNavigate } from "react-router-dom";
+
 import { AppstoreOutlined, AppstoreAddOutlined } from "@ant-design/icons";
-import { useNavigate } from "react-router-dom";
-import { Layout } from "antd";
+import { Layout, Menu } from "antd";
 
-import { Menu } from "antd";
-
-import { useLocation } from "react-router-dom";
+import { useWindowSize } from "../../common/appcommonfunction/Fuctions";
 
 const { Sider } = Layout;
 
@@ -39,7 +37,6 @@ const items = [
 
 const SideBar = () => {
   const dispatch = useDispatch();
-  const ref = useRef();
   const collapsed = useSelector(valueofsider);
 
   const navigate = useNavigate();
@@ -49,6 +46,7 @@ const SideBar = () => {
       ? "/dashboard"
       : location.pathname
   );
+  const size = useWindowSize();
 
   useEffect(() => {
     if (location) {
@@ -58,7 +56,6 @@ const SideBar = () => {
     }
   }, [location, current]);
 
-  const [deviceSize, changeDeviceSize] = useState(window.innerWidth);
   const [addflag, setAddFlag] = useState(true);
   const [removeflag, setRemovesetFlag] = useState(false);
 
@@ -82,28 +79,20 @@ const SideBar = () => {
 
     divElement.appendChild(pElement);
 
-    const resizeW = () => changeDeviceSize(window.innerWidth);
-
-    window.addEventListener("resize", resizeW);
-    if (deviceSize < 760) {
+    if (size.width < 760) {
       if (removeflag) {
-        console.log("P got removed");
         mainDivElement.removeChild(mainDivElement.children[0]);
-        console.log("After Remove", mainDivElement.children);
         setAddFlag(true);
         setRemovesetFlag(false);
       }
     } else {
       if (addflag) {
-        console.log("P got added");
         mainDivElement.insertBefore(divElement, sidebarElement);
-        console.log("After Adding", mainDivElement.children[0]);
         setAddFlag(false);
         setRemovesetFlag(true);
       }
     }
-    return () => window.removeEventListener("resize", resizeW);
-  }, [deviceSize, addflag, removeflag]);
+  }, [size, addflag, removeflag]);
 
   // const handleClick = (e) => {
   //   setCurrent(e.key);
@@ -120,7 +109,6 @@ const SideBar = () => {
   return (
     <>
       <Sider
-        ref={ref}
         trigger={null}
         breakpoint={"xl"}
         width={250}
@@ -138,7 +126,6 @@ const SideBar = () => {
               flexShrink: 0,
               flexBasis: "auto",
             }}
-            // selectedKeys={[current]}
             defaultSelectedKeys={["dashboard"]}
             mode="inline"
             items={items}
@@ -150,44 +137,3 @@ const SideBar = () => {
 };
 
 export default SideBar;
-
-// divElement.append(pElement);
-
-// const divElement = document.getElementById("box-1");
-// const pElement = document.getElementById("box-2");
-// const pElement_1 = document.createElement("p");
-// pElement_1.textContent = "Box";
-
-// const [deviceSize, changeDeviceSize] = useState(window.innerWidth);
-// const [flag, setFlag] = useState(true);
-// const [removeflag, setRemovesetFlag] = useState(false);
-
-// useEffect(() => {
-//   const sidebarElement = document.getElementById("box-sider");
-
-//   const divElement = document.createElement("div");
-
-//   let node = document.createTextNode("Hello");
-//   divElement.appendChild(node);
-
-//   const resizeW = () => changeDeviceSize(window.innerWidth);
-
-//   window.addEventListener("resize", resizeW);
-//   if (deviceSize < 760) {
-//     if (removeflag) {
-//       console.log("P got removed");
-//       // ref?.current.remove();
-//       divElement.remove();
-//       setFlag(true);
-//       setRemovesetFlag(false);
-//     }
-//   } else {
-//     if (flag) {
-//       console.log("P got added");
-//       sidebarElement.append(divElement);
-//       setFlag(false);
-//       setRemovesetFlag(true);
-//     }
-//   }
-//   return () => window.removeEventListener("resize", resizeW);
-// }, [deviceSize, flag, removeflag]);

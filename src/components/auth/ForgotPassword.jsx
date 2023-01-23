@@ -3,12 +3,20 @@ import { useState, useRef } from "react";
 import axios from "axios";
 import { useDispatch } from "react-redux";
 import { UserOutlined } from "@ant-design/icons";
-import { Button, Input, Form } from "antd";
+import { Button, Form } from "antd";
 
 import { toast } from "react-toastify";
-import { makeToast } from "../toast/fuctions";
 
 import { FORGOT_PASSWORD } from "../../constants/index";
+import { InputField } from "../common/FormField";
+import { makeToast } from "../common/appcommonfunction/Fuctions";
+
+import dayjs from "dayjs";
+import timezone from "dayjs/plugin/timezone";
+import utc from "dayjs/plugin/utc";
+dayjs.extend(utc);
+dayjs.extend(timezone);
+dayjs.tz.setDefault("Asia/Kolkata");
 
 const ForgotPassword = () => {
   //  const [api, contextHolder] = notification.useNotification();
@@ -75,11 +83,14 @@ const ForgotPassword = () => {
 
   const onFinish = (values) => {
     sentPasswordRestLink(values);
+    console.log(values);
   };
 
   const onFinishFailed = (errorInfo) => {
     console.log("Failed:", errorInfo);
   };
+
+  const handleChange = (e) => setEmail(e.target.value);
 
   return (
     <>
@@ -100,31 +111,25 @@ const ForgotPassword = () => {
             onFinishFailed={onFinishFailed}
             autoComplete="off"
           >
-            <Form.Item
-              label="Email"
-              name="email"
-              rules={[
-                {
-                  required: true,
-                  type: "email",
-                  message: "Please Enter your Email!",
-                },
-              ]}
-            >
-              <Input
-                type="email"
-                rules={[
-                  {
-                    required: true,
-                    message: "Please input your Password!",
-                  },
-                ]}
-                size="large"
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="large size"
-                prefix={<UserOutlined />}
-              />
-            </Form.Item>
+            <InputField
+              id="email"
+              InputlabelName="Email"
+              type="email"
+              size="large"
+              message="This Field is required"
+              onChange={handleChange}
+              placeholder="Please Enter your Email!"
+              prefix={<UserOutlined />}
+            />
+
+            <InputField
+              id="trackurl"
+              InputlabelName="Track URL"
+              type="text"
+              size="large"
+              message="Track URL is required"
+              placeholder="Enter the Track URL"
+            />
 
             <Button
               className="login-form-button inline-block px-6 py-2.5 bg-amber-800 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-amber-600 hover:shadow-lg focus:shadow-lg focus:outline-none focus:ring-0 active:shadow-lg w-full mb-3 transition ease-in-out delay-150 hover:-translate-y-1 hover:scale-110  duration-150"
