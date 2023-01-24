@@ -40,35 +40,57 @@ export const SelectField = ({
   handleChange,
   SelectFildValues,
 }) => {
-  return (
-    <>
-      <label htmlFor={id}>{selectFieldLabelName}</label>
-      <Form.Item
-        name={id}
-        rules={[
-          {
-            required: true,
-            message: { message },
-          },
-        ]}
-      >
-        <Select onChange={handleChange}>
-          {SelectFildValues.length > 0 ? (
-            SelectFildValues.map((item, i) => {
-              return (
-                <Select.Option
-                  key={i}
-                  value={`${item}`}
-                >{`${item}`}</Select.Option>
-              );
-            })
-          ) : (
+  // console.log(selectFieldLabelName, SelectFildValues);
+  if (SelectFildValues !== undefined) {
+    return (
+      <>
+        <label htmlFor={id}>{selectFieldLabelName}</label>
+        <Form.Item
+          name={id}
+          rules={[
+            {
+              required: true,
+              message: { message },
+            },
+          ]}
+        >
+          <Select onChange={handleChange}>
+            {SelectFildValues.length > 0 ? (
+              SelectFildValues.map((item, i) => {
+                return (
+                  <Select.Option
+                    key={i}
+                    value={`${item}`}
+                  >{`${item}`}</Select.Option>
+                );
+              })
+            ) : (
+              <Select.Option value="No Option">No Option</Select.Option>
+            )}
+          </Select>
+        </Form.Item>
+      </>
+    );
+  } else {
+    return (
+      <>
+        <label htmlFor={id}>{selectFieldLabelName}</label>
+        <Form.Item
+          name={id}
+          rules={[
+            {
+              required: true,
+              message: { message },
+            },
+          ]}
+        >
+          <Select onChange={handleChange}>
             <Select.Option value="No Option">No Option</Select.Option>
-          )}
-        </Select>
-      </Form.Item>
-    </>
-  );
+          </Select>
+        </Form.Item>
+      </>
+    );
+  }
 };
 
 export const SelectFieldForAddress = ({

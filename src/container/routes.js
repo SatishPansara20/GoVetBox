@@ -2,8 +2,8 @@ import React, { lazy } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 import AuthGuard from "../components/auth";
 import AddShipment from "../components/add_shipment";
-import NewShipment from "../components/add_shipment/NewShipment";
-import EditShipmentUserData from "../components/add_shipment/EditShipmentUserData";
+import NewShipment from "../components/add_shipment/add";
+import EditShipmentUserData from "../components/add_shipment/edit/index";
 
 const Layout = lazy(() => import("../components/layout/index"));
 const SignIn = lazy(() => import("../pages/SignIn/index"));

@@ -7,18 +7,11 @@ import {
   useGetPatientAddressURLMutation,
   useGetAllMedicationURLMutation,
   useAddShipmentMutation,
-} from "../../Redux/ReduxApi";
+} from "../../../Redux/ReduxApi";
 import { useDispatch } from "react-redux";
-import { toastAction } from "../../Redux/commonSlice";
+import { toastAction } from "../../../Redux/commonSlice";
 
-import { Form } from "antd";
-import {
-  InputField,
-  SelectField,
-  DateField,
-  SelectFieldForAddress,
-  ButtonField,
-} from "../common/FormField/index";
+import AddForm from "./AddForm";
 
 import dayjs from "dayjs";
 import timezone from "dayjs/plugin/timezone";
@@ -27,10 +20,9 @@ dayjs.extend(utc);
 dayjs.extend(timezone);
 dayjs.tz.setDefault("Asia/Kolkata");
 
-const dateFormate = "MM/DD/YYYY";
-
 let patientNames = [];
 let medicationNames = [];
+let displayAddForm;
 
 const NewShipment = () => {
   const dispatch = useDispatch();
@@ -44,6 +36,7 @@ const NewShipment = () => {
   const [apList, setAPList] = useState([]);
   const [pad, setPAD] = useState([]);
   const [am, setAM] = useState([]);
+  const [visibility, setVisibility] = useState("hidden");
 
   const formRef = useRef(null);
 
@@ -114,6 +107,8 @@ const NewShipment = () => {
     }
   };
 
+  console.log(medicationNames);
+
   const handleSelecteName = (value) => {
     formRef.current?.setFieldsValue({
       medicationname: "",
@@ -139,12 +134,14 @@ const NewShipment = () => {
 
   const onFormLayoutChange = function (changedFields, allFields) {
     if (allFields[2].value !== null && allFields[2].value !== undefined) {
-      document.getElementById("nextDate").style.visibility = "visible";
+      setVisibility("visible");
+      document.getElementById("nextDate").style.visibility = visibility;
       //console.log(allFields[2].value);
 
       disabledDate(allFields[2].value.format(`${"MM/DD/YYYY"}`));
     } else {
-      document.getElementById("nextDate").style.visibility = "hidden";
+      setVisibility("hidden");
+      document.getElementById("nextDate").style.visibility = visibility;
     }
   };
 
@@ -185,113 +182,28 @@ const NewShipment = () => {
     }
   };
 
+  if (patientNames.length > 0 && medicationNames !== undefined) {
+    console.log(medicationNames);
+    displayAddForm = (
+      <AddForm
+        onFormLayoutChange={onFormLayoutChange}
+        onFinish={onFinish}
+        handleSelecteName={handleSelecteName}
+        patientNames={patientNames}
+        medicationNames={medicationNames}
+        disabledDate={disabledDate}
+        pad={pad}
+        visibility={visibility}
+        formRef={formRef}
+      />
+    );
+  }
+
   return (
     <>
       <div className="p-4 flex flex-col">
         <h2 className="text-xl">Shipment Add Management</h2>
-        <Form
-          ref={formRef}
-          name="control-ref"
-          labelCol={{
-            span: 2,
-          }}
-          wrapperCol={{
-            span: "100vh",
-          }}
-          layout="horizontal"
-          onFieldsChange={onFormLayoutChange}
-          onFinish={onFinish}
-          size="large"
-        >
-          {/* Patient Name And Medication Name */}
-          <div className="grid md:grid-cols-2  gap-3">
-            {/* Patient Name */}
-            <div className="flex flex-col ">
-              <SelectField
-                id="patientname"
-                selectFieldLabelName="Patient Name"
-                message="Select Patient Name"
-                handleChange={handleSelecteName}
-                SelectFildValues={patientNames}
-              />
-            </div>
-            {/* Medication Name */}
-            <div className="flex flex-col ">
-              <SelectField
-                id="medicationname"
-                selectFieldLabelName="Medication Name"
-                message="Select Medication Name"
-                SelectFildValues={medicationNames}
-              />
-            </div>
-          </div>
-
-          {/*  Dates */}
-          <div id="root-shipment-div" className="grid md:grid-cols-2  gap-3">
-            {/* Shipment Date */}
-            <div className="flex flex-col ">
-              <DateField
-                id="shipmentdate"
-                dateFieldLabelName="Shipment Date"
-                message="Choose Shipment Date"
-                dateFormate={dateFormate}
-              />
-            </div>
-            {/* Next Shipment Date */}
-            <div
-              id="nextDate"
-              className=" flex flex-col "
-              style={{ visibility: "hidden" }}
-            >
-              <DateField
-                id="nextshipmentdate"
-                dateFieldLabelName="Next Shipment Date"
-                message="Choose Next Shipment Date"
-                disabledDate={disabledDate}
-                dateFormate={dateFormate}
-              />
-            </div>
-          </div>
-
-          {/* Track URL And Doges*/}
-          <div className="grid md:grid-cols-2  gap-3">
-            {/* Track URL */}
-            <div className="flex flex-col ">
-              <InputField
-                id="trackurl"
-                InputlabelName="Track URL"
-                type="text"
-                size="large"
-                message="Track URL is required"
-                placeholder="Enter the Track URL"
-              />
-            </div>
-            {/* Doges */}
-            <div className="flex flex-col ">
-              <InputField
-                id="dosage"
-                InputlabelName="Dosage"
-                type="text"
-                size="large"
-                message="Dosage is required"
-                placeholder="Enter the Dosage"
-              />
-            </div>
-          </div>
-          <SelectFieldForAddress
-            id="patientaddress"
-            selectFieldLabelName="Patient Address"
-            message="Select Patient Address"
-            SelectFildValues={pad}
-          />
-
-          <ButtonField
-            id="submit"
-            type="primary"
-            className="bg-violet-700"
-            buttonText="Submit"
-          />
-        </Form>
+        {displayAddForm}
       </div>
     </>
   );

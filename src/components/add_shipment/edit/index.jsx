@@ -9,10 +9,10 @@ import {
   useGetPatientAddressURLMutation,
   useGetAllMedicationURLMutation,
   useUpdateShipmentMutation,
-} from "../../Redux/ReduxApi";
+} from "../../../Redux/ReduxApi";
 
 import { useDispatch } from "react-redux";
-import { toastAction } from "../../Redux/commonSlice";
+import { toastAction } from "../../../Redux/commonSlice";
 import EditForm from "./EditForm";
 
 import dayjs from "dayjs";

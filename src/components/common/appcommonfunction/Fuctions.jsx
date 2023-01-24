@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import "react-toastify/dist/ReactToastify.css";
 
 //import { useSelector, useDispatch } from "react-redux";
+import { useGetShipmentMutation } from "../../../Redux/ReduxApi";
 import { toastAction } from "../../../Redux/commonSlice";
 
 export const makeToast = (dispatch, receivedToastData, type) => {
@@ -23,8 +24,10 @@ export const makeToast = (dispatch, receivedToastData, type) => {
 
 // NOTE: Fatch Data
 export const useFetchData = (requesMethod, payload) => {
+  const [getShipment] = useGetShipmentMutation();
   const [data, setData] = useState();
   const [fetchError, setFetchError] = useState(null); // null means false
+  const [isError, setIsError] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
@@ -32,9 +35,8 @@ export const useFetchData = (requesMethod, payload) => {
     const fetchData = async (payload) => {
       setIsLoading(true);
       try {
-        const response = await requesMethod(payload, {
-          refetchOnMountOrArgChange: true,
-        });
+        const response = await getShipment(payload);
+
         if (isMounted) {
           setData(response);
           setFetchError(null);
@@ -42,10 +44,11 @@ export const useFetchData = (requesMethod, payload) => {
       } catch (err) {
         if (isMounted) {
           setFetchError(err.message);
+          setIsError(true);
           setData([]);
         }
       } finally {
-        isMounted && setIsLoading(false);
+        isMounted && setIsLoading(false) && setIsError(false);
       }
     };
 
@@ -55,9 +58,9 @@ export const useFetchData = (requesMethod, payload) => {
       isMounted = false;
     };
     return cleanUp;
-  }, [requesMethod, payload]);
+  }, [getShipment, requesMethod]);
 
-  return { data, fetchError, isLoading };
+  return { data, isError, fetchError, isLoading };
 
   // {isLoading && <p className="statusMsg">Loading posts...</p>}
   // {!isLoading && fetchError && <p className="statusMsg" style={{ color: "red" }}>{fetchError}</p>}
