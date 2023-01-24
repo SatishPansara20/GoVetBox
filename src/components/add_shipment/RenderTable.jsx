@@ -22,26 +22,6 @@ import DialogTitle from "@mui/material/DialogTitle";
 import { toast } from "react-toastify";
 import { makeToast } from "../common/appcommonfunction/Fuctions";
 
-import { v4 as uuid } from "uuid";
-import dayjs from "dayjs";
-
-const updateDataSource = (data) => {
-  let dataSource = [];
-  if (data.length > 0) {
-    //console.log(data.length);
-    data.map((shipment) => {
-      return dataSource.push({
-        ...shipment,
-        key: uuid(),
-        deliveryDate: dayjs(shipment.deliveryDate).format("DD-MM-YYYY"),
-        nextDeliveryDate: dayjs(shipment.nextDeliveryDate).format("DD-MM-YYYY"),
-      });
-    });
-  }
-  console.log(dataSource);
-  return dataSource;
-};
-
 const RenderTable = ({
   handleSearchChange,
   form,
@@ -94,10 +74,7 @@ const RenderTable = ({
     try {
       const response = await getShipment(shipmentPayload);
 
-      sendData(
-        response.data.data.recordsTotal,
-        response.data.data.data
-      );
+      sendData(response.data.data.recordsTotal, response.data.data.data);
     } catch (error) {
       console.log("Error while Getting getShipment: ", error);
     }

@@ -3,7 +3,17 @@ import { useState, useEffect } from "react";
 import "react-toastify/dist/ReactToastify.css";
 
 //import { useSelector, useDispatch } from "react-redux";
-import { useGetShipmentMutation } from "../../../Redux/ReduxApi";
+import {
+  useGetApprovedPatientListMutation,
+  useGetShipmentDetailURLMutation,
+  useGetPatientAddressURLMutation,
+  useGetAllMedicationURLMutation,
+  useGetDashboardataMutation,
+  useUpdateShipmentMutation,
+  useAddShipmentMutation,
+  useDeleteShipmentMutation,
+  useGetShipmentMutation,
+} from "../../../Redux/ReduxApi";
 import { toastAction } from "../../../Redux/commonSlice";
 
 export const makeToast = (dispatch, receivedToastData, type) => {
@@ -25,24 +35,99 @@ export const makeToast = (dispatch, receivedToastData, type) => {
 // NOTE: Fatch Data
 export const useFetchData = (requesMethod, payload) => {
   const [getShipment] = useGetShipmentMutation();
+  const [approvedPatientList] = useGetApprovedPatientListMutation();
+  const [ShipmentDetail] = useGetShipmentDetailURLMutation();
+  const [PatientAddress] = useGetPatientAddressURLMutation();
+  const [AllMedication] = useGetAllMedicationURLMutation();
+  const [updateShipment] = useUpdateShipmentMutation();
+  const [addShipment] = useAddShipmentMutation();
+  const [dashboardData] = useGetDashboardataMutation();
+  const [deleteShipment] = useDeleteShipmentMutation();
+
   const [data, setData] = useState();
   const [fetchError, setFetchError] = useState(null); // null means false
   const [isError, setIsError] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
+  const delay = () => new Promise((res) => setTimeout(() => res(), 2000));
+
   useEffect(() => {
     let isMounted = true;
     const fetchData = async (payload) => {
       setIsLoading(true);
-      try {
-        const response = await getShipment(payload);
 
-        if (isMounted) {
-          setData(response);
-          setFetchError(null);
+      try {
+        switch (requesMethod) {
+          case "getShipment":
+            const gs = await getShipment(payload);
+            if (isMounted) {
+              setData(gs);
+              setFetchError(null);
+            }
+            break;
+          case "approvedPatientList":
+            const ap = await approvedPatientList(payload);
+            if (isMounted) {
+              setData(ap);
+              setFetchError(null);
+            }
+            break;
+          case "ShipmentDetail":
+            const sd = await ShipmentDetail(payload);
+            if (isMounted) {
+              setData(sd);
+              setFetchError(null);
+            }
+            break;
+          case "PatientAddress":
+            const pa = await PatientAddress(payload);
+            if (isMounted) {
+              setData(pa);
+              setFetchError(null);
+            }
+            break;
+          case "AllMedication":
+            const am = await AllMedication(payload);
+            if (isMounted) {
+              setData(am);
+              setFetchError(null);
+            }
+            break;
+          case "updateShipment":
+            const us = await updateShipment(payload);
+            if (isMounted) {
+              setData(us);
+              setFetchError(null);
+            }
+            break;
+          case "addShipment":
+            const ads = await addShipment(payload);
+            if (isMounted) {
+              setData(ads);
+              setFetchError(null);
+            }
+            break;
+          case "dashboardData":
+            await delay();
+            const dbs = await dashboardData();
+            if (isMounted) {
+              setData(dbs);
+              setFetchError(null);
+            }
+            break;
+          case "deleteShipment":
+            const ds = await deleteShipment(payload);
+            if (isMounted) {
+              setData(ds);
+              setFetchError(null);
+            }
+            break;
+          default:
+            console.log("default");
         }
       } catch (err) {
         if (isMounted) {
+          setIsLoading(false);
           setFetchError(err.message);
           setIsError(true);
           setData([]);
@@ -58,13 +143,21 @@ export const useFetchData = (requesMethod, payload) => {
       isMounted = false;
     };
     return cleanUp;
-  }, [getShipment, requesMethod]);
+  }, [
+    requesMethod,
+    payload,
+    getShipment,
+    AllMedication,
+    PatientAddress,
+    ShipmentDetail,
+    addShipment,
+    dashboardData,
+    deleteShipment,
+    approvedPatientList,
+    updateShipment,
+  ]);
 
   return { data, isError, fetchError, isLoading };
-
-  // {isLoading && <p className="statusMsg">Loading posts...</p>}
-  // {!isLoading && fetchError && <p className="statusMsg" style={{ color: "red" }}>{fetchError}</p>}
-  // {!isLoading && !fetchError && (posts.length ? <Feed posts={posts} /> : <p className="statusMsg">No posts to display.</p>)}
 };
 
 // NOTE: Window Size
