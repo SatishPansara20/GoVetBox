@@ -20,7 +20,7 @@ import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
 
 import { v4 as uuid } from "uuid";
 
-import { makeToast, useFetchData } from "../common/appcommonfunction/Fuctions";
+import { makeToast } from "../common/appcommonfunction/Fuctions";
 
 import ButtonMI from "@mui/material/Button";
 import Dialog from "@mui/material/Dialog";
@@ -42,7 +42,6 @@ const AddShipment = () => {
 
   const [getShipment] = useGetShipmentMutation();
   const [deleteShipment] = useDeleteShipmentMutation();
-  const responseData = useFetchData();
 
   const navigate = useNavigate();
 
@@ -58,6 +57,12 @@ const AddShipment = () => {
     sort: "",
     dir: "",
   });
+
+  // const {
+  //   data: posts,
+  //   // fetchError,
+  //   // isLoading,
+  // } = useFetchData("getShipment", { length: 10, search: "", start: 0 });
 
   // NOTE: All patient Information
   useEffect(() => {
@@ -77,12 +82,6 @@ const AddShipment = () => {
         shipmentPayload.dir !== undefined &&
         shipmentPayload.dir !== null
       ) {
-        const {
-          data: DDDAAA,
-          error,
-          isLoading,
-        } = responseData(getShipment, shipmentPayload);
-        console.log(DDDAAA, error, isLoading);
         try {
           const response = await getShipment(shipmentPayload, {
             refetchOnMountOrArgChange: true,
@@ -97,14 +96,6 @@ const AddShipment = () => {
         }
       } else {
         try {
-          const {
-            data: DDDAAA,
-            error,
-            isLoading,
-          } = responseData(getShipment, shipmentPayload);
-
-          console.log(DDDAAA, error, isLoading);
-
           const response = await getShipment({
             length: shipmentPayload.length,
             search: shipmentPayload.search,
@@ -126,7 +117,7 @@ const AddShipment = () => {
     if (receivedToastData !== "")
       makeToast(dispatch, receivedToastData, toast.success);
     getData();
-  }, [getShipment, shipmentPayload, dispatch, receivedToastData, responseData]);
+  }, [getShipment, shipmentPayload, dispatch, receivedToastData]);
 
   useEffect(() => {}, []);
 
@@ -366,6 +357,10 @@ const AddShipment = () => {
               .map((_, index) => (index + 1) * 10)}
           />
         </Form>
+
+        {/* {isLoading && <p className="statusMsg">Loading posts...</p>}
+            {!isLoading && fetchError && <p className="statusMsg" style={{ color: "red" }}>{fetchError}</p>}
+            {!isLoading && !fetchError && (posts.length ? <p>{posts}</p>: <p className="statusMsg">No posts to display.</p>)} */}
         <Dialog
           open={open}
           onClose={handleClose}

@@ -11,8 +11,14 @@ import {
 import { useDispatch } from "react-redux";
 import { toastAction } from "../../Redux/commonSlice";
 
-import { Button, Form, Input, Select } from "antd";
-import { InputField, SelectField, DateField } from "../common/FormField/index";
+import { Form } from "antd";
+import {
+  InputField,
+  SelectField,
+  DateField,
+  SelectFieldForAddress,
+  ButtonField,
+} from "../common/FormField/index";
 
 import dayjs from "dayjs";
 import timezone from "dayjs/plugin/timezone";
@@ -24,6 +30,7 @@ dayjs.tz.setDefault("Asia/Kolkata");
 const dateFormate = "MM/DD/YYYY";
 
 let patientNames = [];
+let medicationNames = [];
 
 const NewShipment = () => {
   const dispatch = useDispatch();
@@ -50,6 +57,14 @@ const NewShipment = () => {
         } else {
           if (response.data.data.data.length > 0) {
             setAPList(response.data.data.data);
+            if (response.data.data.data.length > 0) {
+              response.data.data.data.map((patient) => {
+                if (!patientNames.includes(patient.name)) {
+                  patientNames.push(patient.name);
+                }
+                return patientNames;
+              });
+            }
           }
         }
       } catch (error) {
@@ -59,26 +74,26 @@ const NewShipment = () => {
     getData();
   }, [approvedPatientList]);
 
-  if (apList.length > 0) {
-    apList.map((patient) => {
-      if (!patientNames.includes(patient.name)) {
-        patientNames.push(patient.name);
-      }
-      return patientNames;
-    });
-  }
-
   // NOTE: Get All Medications And Addresses
 
   const getMedicationAndAddress = async (id) => {
     setAM([]);
     setPAD([]);
+    medicationNames = [];
     try {
       const response = await AllMedication({
         _id: id,
       });
       if (response.data.data.length > 0) {
         setAM(response.data.data);
+        if (response.data.data.length > 0) {
+          response.data.data.map((medication) => {
+            if (!medicationNames.includes(medication.name)) {
+              medicationNames.push(medication.name);
+            }
+            return medicationNames;
+          });
+        }
       }
     } catch (error) {
       console.log("Error while Getting AllMedication: ", error);
@@ -138,9 +153,9 @@ const NewShipment = () => {
       (patient) => patient.name === values.patientname
     );
 
-    const amID = am.find(
-      (madicationName) => madicationName.name === values.medicationname
-    );
+    const amID = am.find((madicationName) => {
+      return madicationName.name === values.medicationname;
+    });
 
     const padID = pad.find((patient) => {
       return (
@@ -188,34 +203,10 @@ const NewShipment = () => {
           onFinish={onFinish}
           size="large"
         >
+          {/* Patient Name And Medication Name */}
           <div className="grid md:grid-cols-2  gap-3">
+            {/* Patient Name */}
             <div className="flex flex-col ">
-              {/* <label htmlFor="patientname">Patient Name</label>
-              <Form.Item
-                name="patientname"
-                rules={[
-                  {
-                    required: true,
-                    message: "Select Patient Name",
-                  },
-                ]}
-              >
-                <Select onChange={handleSelecteName}>
-                  {patientNames.length > 0 ? (
-                    patientNames.map((patient, i) => {
-                      return (
-                        <Select.Option
-                          key={i}
-                          value={`${patient}`}
-                        >{`${patient}`}</Select.Option>
-                      );
-                    })
-                  ) : (
-                    <Select.Option value="No Option">No Option</Select.Option>
-                  )}
-                </Select>
-              </Form.Item> */}
-
               <SelectField
                 id="patientname"
                 selectFieldLabelName="Patient Name"
@@ -224,56 +215,21 @@ const NewShipment = () => {
                 SelectFildValues={patientNames}
               />
             </div>
+            {/* Medication Name */}
             <div className="flex flex-col ">
-              {/* <label htmlFor="medicationname">Medication Name </label>
-              <Form.Item
-                name="medicationname"
-                rules={[
-                  {
-                    required: true,
-                    message: "Select Medication Name",
-                  },
-                ]}
-              >
-                <Select>
-                  {am.length > 0 ? (
-                    am.map((patient, i) => {
-                      return (
-                        <Select.Option
-                          key={i}
-                          value={`${patient.name}`}
-                        >{`${patient.name}`}</Select.Option>
-                      );
-                    })
-                  ) : (
-                    <Select.Option value="No Option">No Option</Select.Option>
-                  )}
-                </Select>
-              </Form.Item> */}
-
               <SelectField
                 id="medicationname"
                 selectFieldLabelName="Medication Name"
                 message="Select Medication Name"
-                SelectFildValues={am}
+                SelectFildValues={medicationNames}
               />
             </div>
           </div>
 
-          <div className="grid md:grid-cols-2  gap-3">
+          {/*  Dates */}
+          <div id="root-shipment-div" className="grid md:grid-cols-2  gap-3">
+            {/* Shipment Date */}
             <div className="flex flex-col ">
-              {/* <label htmlFor="shipmentdate">Shipment Date</label>
-              <Form.Item
-                name="shipmentdate"
-                rules={[
-                  {
-                    required: true,
-                    message: "Choose Shipment Date",
-                  },
-                ]}
-              >
-                <DatePicker className="w-full" format={dateFormate} />
-              </Form.Item> */}
               <DateField
                 id="shipmentdate"
                 dateFieldLabelName="Shipment Date"
@@ -281,28 +237,12 @@ const NewShipment = () => {
                 dateFormate={dateFormate}
               />
             </div>
+            {/* Next Shipment Date */}
             <div
               id="nextDate"
               className=" flex flex-col "
               style={{ visibility: "hidden" }}
             >
-              {/* <label htmlFor="nextshipmentdate">Next Shipment Date</label>
-              <Form.Item
-                name="nextshipmentdate"
-                rules={[
-                  {
-                    required: true,
-                    message: "Choose Next Shipment Date",
-                  },
-                ]}
-              >
-                <DatePicker
-                  className="w-full"
-                  disabledDate={disabledDate}
-                  format={dateFormate}
-                />
-              </Form.Item> */}
-
               <DateField
                 id="nextshipmentdate"
                 dateFieldLabelName="Next Shipment Date"
@@ -313,21 +253,10 @@ const NewShipment = () => {
             </div>
           </div>
 
+          {/* Track URL And Doges*/}
           <div className="grid md:grid-cols-2  gap-3">
+            {/* Track URL */}
             <div className="flex flex-col ">
-              {/* <label htmlFor="trackurl">Track URL</label>
-              <Form.Item
-                name="trackurl"
-                rules={[
-                  {
-                    required: true,
-                    message: "Track URL is required",
-                  },
-                ]}
-              >
-                <Input />
-              </Form.Item> */}
-
               <InputField
                 id="trackurl"
                 InputlabelName="Track URL"
@@ -337,53 +266,31 @@ const NewShipment = () => {
                 placeholder="Enter the Track URL"
               />
             </div>
+            {/* Doges */}
             <div className="flex flex-col ">
-              <label htmlFor="doges">Doges</label>
-              <Form.Item
-                name="doges"
-                rules={[
-                  {
-                    required: true,
-                    message: "Doges is required",
-                  },
-                ]}
-              >
-                <Input />
-              </Form.Item>
+              <InputField
+                id="dosage"
+                InputlabelName="Dosage"
+                type="text"
+                size="large"
+                message="Dosage is required"
+                placeholder="Enter the Dosage"
+              />
             </div>
           </div>
+          <SelectFieldForAddress
+            id="patientaddress"
+            selectFieldLabelName="Patient Address"
+            message="Select Patient Address"
+            SelectFildValues={pad}
+          />
 
-          <label htmlFor="patientaddress">Patient Address</label>
-          <Form.Item
-            name="patientaddress"
-            rules={[
-              {
-                required: true,
-                message: "Select Patient Address",
-              },
-            ]}
-          >
-            <Select>
-              {pad.length > 0 ? (
-                pad.map((patient, i) => {
-                  return (
-                    <Select.Option
-                      key={i}
-                      value={`${patient.addressLine1},${patient.addressLine2},${patient.city},${patient.state},${patient.pincode}`}
-                    >{`${patient.addressLine1},${patient.addressLine2},${patient.city},${patient.state},${patient.pincode}`}</Select.Option>
-                  );
-                })
-              ) : (
-                <Select.Option value="No Option">No Option</Select.Option>
-              )}
-            </Select>
-          </Form.Item>
-
-          <Form.Item>
-            <Button className="bg-violet-700" type="primary" htmlType="submit">
-              Submit
-            </Button>
-          </Form.Item>
+          <ButtonField
+            id="submit"
+            type="primary"
+            className="bg-violet-700"
+            buttonText="Submit"
+          />
         </Form>
       </div>
     </>

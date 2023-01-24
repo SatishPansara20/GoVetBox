@@ -24,12 +24,12 @@ export const makeToast = (dispatch, receivedToastData, type) => {
 // NOTE: Fatch Data
 export const useFetchData = (requesMethod, payload) => {
   const [data, setData] = useState();
-  const [fetchError, setFetchError] = useState(null);
+  const [fetchError, setFetchError] = useState(null); // null means false
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     let isMounted = true;
-    const fetchData = async (url) => {
+    const fetchData = async (payload) => {
       setIsLoading(true);
       try {
         const response = await requesMethod(payload, {
@@ -58,6 +58,10 @@ export const useFetchData = (requesMethod, payload) => {
   }, [requesMethod, payload]);
 
   return { data, fetchError, isLoading };
+
+  // {isLoading && <p className="statusMsg">Loading posts...</p>}
+  // {!isLoading && fetchError && <p className="statusMsg" style={{ color: "red" }}>{fetchError}</p>}
+  // {!isLoading && !fetchError && (posts.length ? <Feed posts={posts} /> : <p className="statusMsg">No posts to display.</p>)}
 };
 
 // NOTE: Window Size
