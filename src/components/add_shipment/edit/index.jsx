@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React from "react";
 import { useEffect } from "react";
 import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
@@ -34,7 +34,7 @@ const EditShipmentUserData = () => {
   const [AllMedication] = useGetAllMedicationURLMutation();
   const [updateShipment] = useUpdateShipmentMutation();
 
-  const formRef = useRef(null);
+  const ref = React.useRef(null);
   const { id } = useParams();
   const navigate = useNavigate();
 
@@ -186,9 +186,9 @@ const EditShipmentUserData = () => {
   };
 
   const handleSelecteName = (value) => {
-    formRef.current?.setFieldsValue({
-      medicationNames: "",
-      patientAddress: "",
+    ref.current?.setFieldsValue({
+      medicationname: "",
+      patientaddress: "",
       deliveryDate: "",
       nextDeliveryDate: "",
     });
@@ -199,6 +199,7 @@ const EditShipmentUserData = () => {
   };
 
   const onFinish = async (values) => {
+    console.log(values);
     const payload = {
       patientId: sd.patientId,
       medicationId: sd.medicationId,
@@ -239,7 +240,7 @@ const EditShipmentUserData = () => {
             date.dDate !== "" &&
             date.ndDate !== "" ? (
             <EditForm
-              formRef={formRef}
+              ref={ref}
               sd={sd}
               isFeching={isFeching}
               isError={isError}

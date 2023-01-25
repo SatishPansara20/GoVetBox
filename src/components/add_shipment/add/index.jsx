@@ -38,7 +38,7 @@ const NewShipment = () => {
   const [am, setAM] = useState([]);
   const [visibility, setVisibility] = useState("hidden");
 
-  const formRef = useRef(null);
+  const ref = useRef(null);
 
   // NOTE: Approved Patient List
   useEffect(() => {
@@ -108,8 +108,7 @@ const NewShipment = () => {
   };
 
   const handleSelecteName = (value) => {
-    console.log(formRef.current);
-    formRef.current?.setFieldsValue({
+    ref.current?.setFieldsValue({
       medicationname: "",
       patientaddress: "",
     });
@@ -121,10 +120,10 @@ const NewShipment = () => {
 
   const disabledDate = (current) => {
     if (
-      formRef.current?.getFieldValue(["shipmentdate"]) !== null &&
-      formRef.current?.getFieldValue(["shipmentdate"]) !== undefined
+      ref.current?.getFieldValue(["shipmentdate"]) !== null &&
+      ref.current?.getFieldValue(["shipmentdate"]) !== undefined
     ) {
-      const startDate = formRef.current
+      const startDate = ref.current
         ?.getFieldValue(["shipmentdate"])
         .format(`${"MM/DD/YYYY"}`);
       return current && current < dayjs(startDate, "MM/DD/YYYY").endOf("day");
@@ -192,7 +191,7 @@ const NewShipment = () => {
         disabledDate={disabledDate}
         pad={pad}
         visibility={visibility}
-        formRef={formRef}
+        ref={ref}
       />
     );
   }

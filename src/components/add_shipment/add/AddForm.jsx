@@ -30,11 +30,11 @@ const AddForm = React.forwardRef(
       visibility,
       pad,
     },
-    formRef
+    ref
   ) => {
     return (
       <Form
-        ref={formRef}
+        ref={ref}
         name="control-ref"
         labelCol={{
           span: 2,
