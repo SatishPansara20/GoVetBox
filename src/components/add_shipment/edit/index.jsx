@@ -4,8 +4,6 @@ import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 
 import {
-  useGetApprovedPatientListMutation,
-  useGetShipmentDetailURLMutation,
   useGetPatientAddressURLMutation,
   useGetAllMedicationURLMutation,
   useUpdateShipmentMutation,
@@ -13,6 +11,9 @@ import {
 
 import { useDispatch } from "react-redux";
 import { toastAction } from "../../../Redux/commonSlice";
+
+import { Spin } from "antd";
+import { useFetchData } from "../../common/appcommonfunction/Fuctions";
 import EditForm from "./EditForm";
 
 import dayjs from "dayjs";
@@ -24,66 +25,78 @@ dayjs.tz.setDefault("Asia/Kolkata");
 
 const dateFormate = "MM/DD/YYYY";
 
-let dispayEditFrom;
 let patientNames = [];
 let medicationNames = [];
 
 const EditShipmentUserData = () => {
   const dispatch = useDispatch();
-  const { id } = useParams();
-  const navigate = useNavigate();
-
-  const [approvedPatientList] = useGetApprovedPatientListMutation();
-  const [ShipmentDetail] = useGetShipmentDetailURLMutation();
   const [PatientAddress] = useGetPatientAddressURLMutation();
   const [AllMedication] = useGetAllMedicationURLMutation();
   const [updateShipment] = useUpdateShipmentMutation();
 
+  const formRef = useRef(null);
+  const { id } = useParams();
+  const navigate = useNavigate();
+
   const [apList, setAPList] = useState([]);
   const [sd, setSD] = useState({});
   const [pad, setPAD] = useState([]);
-  const [am, setAM] = useState([]);
 
-  const formRef = useRef(null);
+  const [am, setAM] = useState([]);
+  const [date, setDate] = useState({ dDate: "", ndDate: "" });
+
+  // ShipmentDetail
+  useEffect(() => {}, []);
+  const {
+    data: response,
+    isError,
+    fetchError,
+    isLoading: isFeching,
+  } = useFetchData("ShipmentDetail", {
+    _id: id,
+  });
 
   useEffect(() => {
-    const getData = async () => {
-      // NOTE: ShipmentDetail
-      try {
-        const response = await ShipmentDetail({
-          _id: id,
-        });
-        if (response.status === 400) {
-          alert(response.message);
-        } else if (Object.keys(response.data).length) {
-          setSD(response.data.data);
-        }
-      } catch (error) {
-        console.log("Error while Getting ShipmentDetail : ", error);
-      }
+    if (!isFeching && !isError && response !== undefined && response !== null) {
+      setSD(response.data.data);
+    }
+  }, [response, isError, isFeching, id]);
 
-      // NOTE: Approved Patient List
-      try {
-        const response = await approvedPatientList({ start: 0, length: 10000 });
-        if (response.data.data.data.length > 0) {
-          setAPList(response.data.data.data);
-          if (response.data.data.data.length > 0) {
-            response.data.data.data.map((patient) => {
-              if (!patientNames.includes(patient.name)) {
-                patientNames.push(patient.name);
-              }
-              return patientNames;
-            });
-          }
-        }
-      } catch (error) {
-        console.log("Error while Getting approvedPatientList : ", error);
-      }
-    };
-    getData();
+  useEffect(() => {
+    if (sd !== undefined && sd !== null && Object.keys(sd).length > 0) {
+      setDate({
+        dDate: dayjs(sd.deliveryDate).format(dateFormate),
+        ndDate: dayjs(sd.nextDeliveryDate).format(dateFormate),
+      });
+    }
+  }, [sd]);
 
-    return () => {};
-  }, [ShipmentDetail, approvedPatientList, id]);
+  // Approved Patient List
+  const {
+    data: response_1,
+    isError: isError_1,
+    fetchError: fetchError_1,
+    isLoading: isFeching_1,
+  } = useFetchData("approvedPatientList", { start: 0, length: 10000 });
+
+  useEffect(() => {
+    if (isFeching_1) {
+    } else if (isError_1) {
+      console.log(fetchError_1);
+    } else if (
+      response_1 !== undefined &&
+      response_1 !== null &&
+      response_1.data.data.data.length > 0
+    ) {
+      setAPList(response_1.data.data.data);
+      response_1.data.data.data.map((patient) => {
+        if (!patientNames.includes(patient.name)) {
+          patientNames.push(patient.name);
+        }
+        return patientNames;
+      });
+    }
+  }, [response_1, fetchError_1, isError_1, isFeching_1]);
 
   useEffect(() => {
     const getData = async (patientId) => {
@@ -185,8 +198,6 @@ const EditShipmentUserData = () => {
     getMedicationAndAddress(selectedPatientName._id);
   };
 
-  // const onFormLayoutChange = function (changedFields, allFields) {};
-
   const onFinish = async (values) => {
     const payload = {
       patientId: sd.patientId,
@@ -212,35 +223,95 @@ const EditShipmentUserData = () => {
       console.log("Error while Getting AllMedication: ", error);
     }
   };
-
-  if (am.length > 0 || Object.keys(sd).length > 0) {
-    const dDate = dayjs(sd.deliveryDate).format(dateFormate);
-    const ndDate = dayjs(sd.nextDeliveryDate).format(dateFormate);
-    if ((dDate && ndDate) !== undefined && (dDate && ndDate) !== null) {
-      dispayEditFrom = (
-        <EditForm
-          sd={sd}
-          dDate={dDate}
-          ndDate={ndDate}
-          formRef={formRef}
-          onFinish={onFinish}
-          handleSelecteName={handleSelecteName}
-          patientNames={patientNames}
-          medicationNames={medicationNames}
-          pad={pad}
-        />
-      );
-    }
-  }
-
   return (
     <>
       <div className="p-4 flex flex-col">
         <h2 className="text-xl">Shipment Add Management</h2>
-        {dispayEditFrom}
+        <div className="w-full">
+          {isFeching ? (
+            <Spin className="w-full" tip="Loading data..." size="large" />
+          ) : isError ? (
+            <p>{fetchError}</p>
+          ) : sd !== undefined &&
+            sd !== null &&
+            Object.keys(sd).length > 0 &&
+            am.length > 0 &&
+            date.dDate !== "" &&
+            date.ndDate !== "" ? (
+            <EditForm
+              formRef={formRef}
+              sd={sd}
+              isFeching={isFeching}
+              isError={isError}
+              fetchError={fetchError}
+              dDate={date.dDate}
+              ndDate={date.ndDate}
+              onFinish={onFinish}
+              handleSelecteName={handleSelecteName}
+              patientNames={patientNames}
+              medicationNames={medicationNames}
+              pad={pad}
+            />
+          ) : (
+            <p>No Data Found</p>
+          )}
+        </div>
       </div>
     </>
   );
 };
 
 export default EditShipmentUserData;
+
+//const [patientId, setPatientId] = useState("");
+// //NOTE:  All Medications
+
+// const {
+//   data: response_2,
+//   isError: isError_2,
+//   fetchError: fetchError_2,
+//   isLoading: isFeching_2,
+// } = useFetchData("AllMedication", patientId);
+
+// useEffect(() => {
+//   if (isFeching_2) {
+//   } else if (isError_2) {
+//     console.log(fetchError_2);
+//   } else if (
+//     response_2 !== undefined &&
+//     response_2 !== null &&
+//     response_2.data.data.length > 0
+//   ) {
+//     setAM([]);
+//     setAM(response_2.data.data);
+//     medicationNames = [];
+//     response_2.data.data.map((medication) => {
+//       if (!medicationNames.includes(medication.name)) {
+//         medicationNames.push(medication.name);
+//       }
+//       return medicationNames;
+//     });
+//   }
+// }, [isFeching_2, response_2, fetchError_2, isError_2, patientId]);
+
+// // NOTE:  Patient Address
+// const {
+//   data: response_3,
+//   isError: isError_3,
+//   fetchError: fetchError_3,
+//   isLoading: isFeching_3,
+// } = useFetchData("PatientAddress", patientId);
+
+// useEffect(() => {
+//   if (isFeching_3) {
+//   } else if (isError_3) {
+//     console.log(fetchError_3);
+//   } else if (
+//     response_3 !== undefined &&
+//     response_3 !== null &&
+//     response_3.data.data.length > 0
+//   ) {
+//     setPAD([]);
+//     setPAD(response_3.data.data);
+//   }
+// }, [isFeching_3, response_3, fetchError_3, isError_3, patientId]);

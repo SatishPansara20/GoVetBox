@@ -107,9 +107,8 @@ const NewShipment = () => {
     }
   };
 
-  console.log(medicationNames);
-
   const handleSelecteName = (value) => {
+    console.log(formRef.current);
     formRef.current?.setFieldsValue({
       medicationname: "",
       patientaddress: "",
@@ -183,7 +182,6 @@ const NewShipment = () => {
   };
 
   if (patientNames.length > 0 && medicationNames !== undefined) {
-    console.log(medicationNames);
     displayAddForm = (
       <AddForm
         onFormLayoutChange={onFormLayoutChange}

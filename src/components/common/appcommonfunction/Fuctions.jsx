@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 
 import "react-toastify/dist/ReactToastify.css";
 
-//import { useSelector, useDispatch } from "react-redux";
 import {
   useGetApprovedPatientListMutation,
   useGetShipmentDetailURLMutation,
@@ -45,58 +44,119 @@ export const useFetchData = (requesMethod, payload) => {
   const [deleteShipment] = useDeleteShipmentMutation();
 
   const [data, setData] = useState();
-  const [fetchError, setFetchError] = useState(null); // null means false
+  const [fetchError, setFetchError] = useState(null); // null means act as false
   const [isError, setIsError] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
-  const delay = () => new Promise((res) => setTimeout(() => res(), 2000));
+  // const delay = () => new Promise((res) => setTimeout(() => res(), 2000));
 
   useEffect(() => {
     let isMounted = true;
-    const fetchData = async (payload) => {
+    const fetchData = async () => {
       setIsLoading(true);
 
       try {
+        // console.log("Received Method name :", requesMethod);
+        // console.log("Received payload :", payload);
         switch (requesMethod) {
           case "getShipment":
-            const gs = await getShipment(payload);
-            if (isMounted) {
-              setData(gs);
-              setFetchError(null);
+            if (payload.start < 0) {
+              payload({
+                ...payload,
+                start: 0,
+              });
+            }
+
+            if (
+              payload.sort !== "" &&
+              payload.sort !== undefined &&
+              payload.sort !== null &&
+              payload.dir !== "" &&
+              payload.dir !== undefined &&
+              payload.dir !== null
+            ) {
+              //   await delay();
+              const gs = await getShipment(payload, {
+                refetchOnMountOrArgChange: true,
+              });
+
+              if (isMounted && gs.data.status === 200) {
+                setData(gs);
+                setIsLoading(false);
+                setFetchError(null);
+              } else {
+                alert(gs);
+              }
+            } else {
+              //  await delay();
+              const gs = await getShipment({
+                length: payload.length,
+                search: payload.search,
+                start: payload.start,
+              });
+
+              if (isMounted && gs.data.status === 200) {
+                setData(gs);
+                setIsLoading(false);
+                setFetchError(null);
+              } else {
+                alert(gs);
+              }
             }
             break;
           case "approvedPatientList":
             const ap = await approvedPatientList(payload);
             if (isMounted) {
               setData(ap);
+              setIsLoading(false);
               setFetchError(null);
             }
             break;
           case "ShipmentDetail":
+            // await delay();
             const sd = await ShipmentDetail(payload);
-            if (isMounted) {
+            if (isMounted && sd.status === 400) {
+              alert(sd.message);
+            } else if (isMounted && Object.keys(sd.data).length > 0) {
               setData(sd);
+              setIsLoading(false);
               setFetchError(null);
             }
+
             break;
           case "PatientAddress":
-            const pa = await PatientAddress(payload);
-            if (isMounted) {
-              setData(pa);
-              setFetchError(null);
+            if (payload !== "") {
+              const pa = await PatientAddress({
+                length: 10000,
+                patientId: payload,
+                start: 0,
+              });
+              if (isMounted) {
+                setData(pa);
+                setIsLoading(false);
+                setFetchError(null);
+              }
             }
+
             break;
           case "AllMedication":
-            const am = await AllMedication(payload);
-            if (isMounted) {
-              setData(am);
-              setFetchError(null);
+            if (payload !== "") {
+              const am = await AllMedication({ _id: payload });
+              if (isMounted) {
+                setData(am);
+                setIsLoading(false);
+                setFetchError(null);
+              }
+            } else {
+              console.log("AllMedication id :", payload);
             }
+
             break;
           case "updateShipment":
             const us = await updateShipment(payload);
             if (isMounted) {
               setData(us);
+              setIsLoading(false);
               setFetchError(null);
             }
             break;
@@ -104,14 +164,16 @@ export const useFetchData = (requesMethod, payload) => {
             const ads = await addShipment(payload);
             if (isMounted) {
               setData(ads);
+              setIsLoading(false);
               setFetchError(null);
             }
             break;
           case "dashboardData":
-            await delay();
+            // await delay();
             const dbs = await dashboardData();
             if (isMounted) {
               setData(dbs);
+              setIsLoading(false);
               setFetchError(null);
             }
             break;
@@ -119,11 +181,12 @@ export const useFetchData = (requesMethod, payload) => {
             const ds = await deleteShipment(payload);
             if (isMounted) {
               setData(ds);
+              setIsLoading(false);
               setFetchError(null);
             }
             break;
           default:
-            console.log("default");
+            alert("Unknown API Method");
         }
       } catch (err) {
         if (isMounted) {
@@ -137,27 +200,28 @@ export const useFetchData = (requesMethod, payload) => {
       }
     };
 
-    fetchData(payload);
+    fetchData();
 
     const cleanUp = () => {
       isMounted = false;
     };
     return cleanUp;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     requesMethod,
-    payload,
-    getShipment,
-    AllMedication,
-    PatientAddress,
-    ShipmentDetail,
-    addShipment,
-    dashboardData,
-    deleteShipment,
-    approvedPatientList,
-    updateShipment,
+    // payload,
+    // getShipment,
+    // AllMedication,
+    // PatientAddress,
+    // ShipmentDetail,
+    // addShipment,
+    // dashboardData,
+    // deleteShipment,
+    // approvedPatientList,
+    // updateShipment,
   ]);
 
-  return { data, isError, fetchError, isLoading };
+  return { isError, fetchError, isLoading, data };
 };
 
 // NOTE: Window Size

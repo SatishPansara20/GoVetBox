@@ -1,30 +1,30 @@
 import React, { useEffect } from "react";
-import { useState } from "react";
-import dayjs from "dayjs";
+import { useState, useCallback } from "react";
 
-import { useGetShipmentMutation } from "../../Redux/ReduxApi";
 import { useSelector, useDispatch } from "react-redux";
-import { toastData } from "../../Redux/commonSlice";
+import {
+  toastData,
+  addShipmentdataToCommonSlice,
+  updateShipmentPayload,
+} from "../../Redux/commonSlice";
 
 import { Form } from "antd";
 
-import { v4 as uuid } from "uuid";
-
-import { makeToast } from "../common/appcommonfunction/Fuctions";
+import { makeToast, useFetchData } from "../common/appcommonfunction/Fuctions";
 
 import { toast } from "react-toastify";
 import RenderTable from "./RenderTable";
 
-let dataSource = [];
+let ds;
 
 const AddShipment = () => {
   const receivedToastData = useSelector(toastData);
+  const dataSource = useSelector(updateShipmentPayload);
   const dispatch = useDispatch();
 
   // const [getShipment, isLoading, isSuccess, isUninitialized] =
   //   useGetShipmentMutation();
 
-  const [getShipment] = useGetShipmentMutation();
   const [form] = Form.useForm();
 
   const [data, setData] = useState([]);
@@ -37,78 +37,35 @@ const AddShipment = () => {
     dir: "",
   });
 
-  const sendData = (data, data_1) => {
-    setTotalData(data);
-    setData(data_1);
-  };
-
   // NOTE: All patient Information
-  useEffect(() => {
-    const getData = async () => {
-      //Checking start value
-      if (shipmentPayload.start < 0) {
-        setShipmentPayload({
-          ...shipmentPayload,
-          start: 0,
-        });
-      }
-      if (
-        shipmentPayload.sort !== "" &&
-        shipmentPayload.sort !== undefined &&
-        shipmentPayload.sort !== null &&
-        shipmentPayload.dir !== "" &&
-        shipmentPayload.dir !== undefined &&
-        shipmentPayload.dir !== null
-      ) {
-        try {
-          const response = await getShipment(shipmentPayload, {
-            refetchOnMountOrArgChange: true,
-          });
-          if (response.data.status === 200) {
-            setData(response.data.data.data);
-            setTotalData(response.data.data.recordsTotal);
-          } else {
-            alert(response);
-          }
-        } catch (error) {
-          console.log("Error while Getting getShipment: ", error);
-        }
-      } else {
-        try {
-          const response = await getShipment({
-            length: shipmentPayload.length,
-            search: shipmentPayload.search,
-            start: shipmentPayload.start,
-          });
+  const {
+    data: response,
+    isError,
+    fetchError,
+    isLoading: isFeching,
+  } = useFetchData("getShipment", shipmentPayload);
 
-          if (response.data.status === 200) {
-            setData(response.data.data.data);
-            setTotalData(response.data.data.recordsTotal);
-          } else {
-            alert(response);
-          }
-        } catch (error) {
-          console.log("Error while Getting getShipment: ", error);
-        }
-      }
-    };
+  const sendData = useCallback((data) => {
+    setTotalData(data);
+  }, []);
+
+  useEffect(() => {
     if (receivedToastData !== "")
       makeToast(dispatch, receivedToastData, toast.success);
-    getData();
-  }, [getShipment, shipmentPayload, dispatch, receivedToastData]);
+  }, [shipmentPayload, dispatch, receivedToastData]);
 
-  if (data.length > 0) {
-    dataSource = [];
-    //console.log(data.length);
-    data.map((shipment) => {
-      return dataSource.push({
-        ...shipment,
-        key: uuid(),
-        deliveryDate: dayjs(shipment.deliveryDate).format("DD-MM-YYYY"),
-        nextDeliveryDate: dayjs(shipment.nextDeliveryDate).format("DD-MM-YYYY"),
-      });
-    });
-  }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => {
+    if (!isFeching && !isError && response !== undefined && response !== null) {
+      setData(response.data.data.data);
+      setTotalData(response.data.data.recordsTotal);
+    }
+  });
+  useEffect(() => {
+    if (data.length > 0) {
+      dispatch(addShipmentdataToCommonSlice(data));
+    }
+  }, [data, dispatch]);
 
   const handleChange = (pagination, filters, sorter) => {
     // order:"ascend"  order:"descend" sorter.columnKey
@@ -141,7 +98,7 @@ const AddShipment = () => {
 
   return (
     <>
-      <RenderTable
+       <RenderTable
         handleSearchChange={handleSearchChange}
         form={form}
         dataSource={dataSource}
@@ -150,7 +107,11 @@ const AddShipment = () => {
         totalData={totalData}
         shipmentPayload={shipmentPayload}
         sendData={sendData}
+        isFeching={isFeching}
+        isError={isError}
+        fetchError={fetchError}
       />
+      {ds}
     </>
   );
 };

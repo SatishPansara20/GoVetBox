@@ -1,5 +1,8 @@
 import { createSlice } from "@reduxjs/toolkit";
 
+import { v4 as uuid } from "uuid";
+import dayjs from "dayjs";
+
 const initialState = {
   token: "",
   sliderCollapsed: false,
@@ -13,32 +16,44 @@ const commonSlice = createSlice({
   reducers: {
     addShipmentdataToCommonSlice: {
       reducer(state, action) {
-        state.updateShipmentPayload.push(action.payload);
+        if (action.payload.length > 0) {
+          state.updateShipmentPayload = [];
+          action.payload.map((shipment) => {
+            return state.updateShipmentPayload.push({
+              ...shipment,
+              key: uuid(),
+              deliveryDate: dayjs(shipment.deliveryDate).format("DD-MM-YYYY"),
+              nextDeliveryDate: dayjs(shipment.nextDeliveryDate).format(
+                "DD-MM-YYYY"
+              ),
+            });
+          });
+        }
       },
-      prepare(data) {
-        const {
-          addressId,
-          deliveryDate,
-          dosage,
-          medicationId,
-          nextDeliveryDate,
-          patientId,
-          trackUrl,
-          _id,
-        } = data;
-        return {
-          payload: {
-            addressId,
-            deliveryDate,
-            dosage,
-            medicationId,
-            nextDeliveryDate,
-            patientId,
-            trackUrl,
-            _id,
-          },
-        };
-      },
+      // prepare(data) {
+      //   const {
+      //     addressId,
+      //     deliveryDate,
+      //     dosage,
+      //     medicationId,
+      //     nextDeliveryDate,
+      //     patientId,
+      //     trackUrl,
+      //     _id,
+      //   } = data;
+      //   return {
+      //     payload: {
+      //       addressId,
+      //       deliveryDate,
+      //       dosage,
+      //       medicationId,
+      //       nextDeliveryDate,
+      //       patientId,
+      //       trackUrl,
+      //       _id,
+      //     },
+      //   };
+      // },
     },
 
     toggleSlider: (state) => {
@@ -57,6 +72,8 @@ const commonSlice = createSlice({
 
 export const valueofsider = (state) => state.common.sliderCollapsed;
 export const toastData = (state) => state.common.toastData;
+export const updateShipmentPayload = (state) =>
+  state.common.updateShipmentPayload;
 export const { addShipmentdataToCommonSlice, toggleSlider, toastAction } =
   commonSlice.actions;
 export default commonSlice.reducer;

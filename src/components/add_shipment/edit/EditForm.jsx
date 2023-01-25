@@ -37,6 +37,7 @@ const EditForm = React.forwardRef(
       <>
         <Form
           ref={formRef}
+          name="control-ref"
           initialValues={{
             patientname: sd.patinetName,
             medicationname: sd.medicationName,
@@ -46,7 +47,6 @@ const EditForm = React.forwardRef(
             dosage: sd.dosage,
             patientaddress: `${sd.addressLine1},${sd.addressLine2}`,
           }}
-          name="control-ref"
           labelCol={{
             span: 2,
           }}

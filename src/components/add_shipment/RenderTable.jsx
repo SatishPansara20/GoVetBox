@@ -1,5 +1,10 @@
 import React, { useState } from "react";
 import { useDispatch } from "react-redux";
+//import { useSelector } from "react-redux";
+import {
+  addShipmentdataToCommonSlice,
+  //updateShipmentPayload,
+} from "../../Redux/commonSlice";
 import {
   useDeleteShipmentMutation,
   useGetShipmentMutation,
@@ -25,18 +30,22 @@ import { makeToast } from "../common/appcommonfunction/Fuctions";
 const RenderTable = ({
   handleSearchChange,
   form,
-  dataSource,
   handleChange,
   onShowSizeChange,
   totalData,
   shipmentPayload,
   sendData,
+  isFeching: loading,
+  isError,
+  fetchError,
+  dataSource,
 }) => {
   const dispatch = useDispatch();
   const [deleteShipment] = useDeleteShipmentMutation();
   const [getShipment] = useGetShipmentMutation();
 
   const navigate = useNavigate();
+
   const [open, setOpen] = useState(false);
   const [deleteRecord, setdeleteRecord] = useState({});
 
@@ -75,6 +84,7 @@ const RenderTable = ({
       const response = await getShipment(shipmentPayload);
 
       sendData(response.data.data.recordsTotal, response.data.data.data);
+      dispatch(addShipmentdataToCommonSlice( response.data.data.data));
     } catch (error) {
       console.log("Error while Getting getShipment: ", error);
     }
@@ -214,11 +224,13 @@ const RenderTable = ({
             </Button>
           </Link>
         </div>
+
         <Form className="inline-block p-2" form={form} component={false}>
           <Table
             className=" w-full inline-block flex-shrink overflow-hidden"
             bordered
-            dataSource={dataSource}
+            loading={loading}
+            dataSource={isError ? console.log(fetchError) : dataSource}
             inputType="text"
             columns={columns}
             size="large"
@@ -237,9 +249,6 @@ const RenderTable = ({
           />
         </Form>
 
-        {/* {isLoading && <p className="statusMsg">Loading posts...</p>}
-        {!isLoading && fetchError && <p className="statusMsg" style={{ color: "red" }}>{fetchError}</p>}
-        {!isLoading && !fetchError && (posts.length ? <p>{posts}</p>: <p className="statusMsg">No posts to display.</p>)} */}
         <Dialog
           open={open}
           onClose={handleClose}
