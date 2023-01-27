@@ -46,6 +46,8 @@ const SideBar = () => {
       ? "/dashboard"
       : location.pathname
   );
+
+  //Current window size
   const size = useWindowSize();
 
   useEffect(() => {
@@ -126,7 +128,8 @@ const SideBar = () => {
               flexShrink: 0,
               flexBasis: "auto",
             }}
-            defaultSelectedKeys={["dashboard"]}
+            defaultSelectedKeys={[current]}
+            //  selectedKeys={[current]}
             mode="inline"
             items={items}
           />
