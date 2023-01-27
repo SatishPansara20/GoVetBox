@@ -210,15 +210,15 @@ export const useFetchData = (requesMethod, payload) => {
   }, [
     requesMethod,
     payload,
-  //   getShipment,
-  //   AllMedication,
-  //   PatientAddress,
-  //  // ShipmentDetail,
-  //   addShipment,
-  //   dashboardData,
-  //   deleteShipment,
-  //   //approvedPatientList,
-  //   updateShipment,
+    //   getShipment,
+    //   AllMedication,
+    //   PatientAddress,
+    //  // ShipmentDetail,
+    //   addShipment,
+    //   dashboardData,
+    //   deleteShipment,
+    //   //approvedPatientList,
+    //   updateShipment,
   ]);
 
   return { isError, fetchError, isLoading, data };

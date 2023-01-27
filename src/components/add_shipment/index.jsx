@@ -96,8 +96,6 @@ const AddShipment = () => {
     });
   };
 
-  
-
   return (
     <>
       <RenderTable
