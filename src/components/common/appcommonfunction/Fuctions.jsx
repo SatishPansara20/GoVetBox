@@ -50,6 +50,8 @@ export const useFetchData = (requesMethod, payload) => {
 
   // const delay = () => new Promise((res) => setTimeout(() => res(), 2000));
 
+
+
   useEffect(() => {
     let isMounted = true;
     const fetchData = async () => {

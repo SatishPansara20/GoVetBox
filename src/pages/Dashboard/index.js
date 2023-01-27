@@ -12,8 +12,6 @@ const Dashboard = () => {
     isLoading: isFeching,
   } = useFetchData("dashboardData");
 
-
-
   return (
     <>
       <div className="relative site-card-wrapper w-full  h-full ">

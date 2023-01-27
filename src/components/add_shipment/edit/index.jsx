@@ -14,7 +14,6 @@ import {
 import { useDispatch } from "react-redux";
 import { toastAction } from "../../../Redux/commonSlice";
 
-import { Spin } from "antd";
 //import { useFetchData } from "../../common/appcommonfunction/Fuctions";
 import EditForm from "./EditForm";
 
@@ -40,7 +39,8 @@ const EditShipmentUserData = () => {
   const [approvedPatientList] = useGetApprovedPatientListMutation();
   const [ShipmentDetail] = useGetShipmentDetailURLMutation();
 
-  const ref = React.useRef(null);
+  const ref = React.createRef(null);
+
   const { id } = useParams();
   const navigate = useNavigate();
 
@@ -48,8 +48,10 @@ const EditShipmentUserData = () => {
   const [sd, setSD] = useState({});
   const [pad, setPAD] = useState([]);
 
+  // eslint-disable-next-line no-unused-vars
   const [am, setAM] = useState([]);
   const [date, setDate] = useState({ dDate: "", ndDate: "" });
+  const [selectedpatient, setSelectedPatient] = useState(sd.patinetName);
 
   // ShipmentDetail
   useEffect(() => {}, []);
@@ -57,16 +59,17 @@ const EditShipmentUserData = () => {
   const [fetchError, setFetchError] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isError, setIsError] = useState(false);
-  //const [selectedpatient, setSelectedPatient] = useState("");
 
   useEffect(() => {
     let isMounted = true;
+    const delay = () => new Promise((res) => setTimeout(() => res(), 2000));
 
     const fetchData = async () => {
       setIsLoading(true);
 
       try {
-         //NOTE:  ShipmentDetail
+        //NOTE:  ShipmentDetail
+        await delay();
         const response = await ShipmentDetail({
           _id: id,
         });
@@ -123,6 +126,7 @@ const EditShipmentUserData = () => {
         dDate: dayjs(sd.deliveryDate).format(dateFormate),
         ndDate: dayjs(sd.nextDeliveryDate).format(dateFormate),
       });
+      setSelectedPatient(sd.patientName);
     }
   }, [sd]);
 
@@ -214,6 +218,7 @@ const EditShipmentUserData = () => {
   };
 
   const handleSelecteName = (value) => {
+    setSelectedPatient(value);
     ref.current?.setFieldsValue({
       medicationname: "",
       patientaddress: "",
@@ -253,15 +258,12 @@ const EditShipmentUserData = () => {
     }
   };
 
-  // console.log(ref.current);
-  // console.log(ref.current?.getFieldValue(["patientname"]));
-
   return (
     <>
       <div className="p-4 flex flex-col">
         <h2 className="text-xl">Shipment Add Management</h2>
         <div className="w-full">
-          {isLoading ? (
+          {/* {isLoading ? (
             <Spin className="w-full" tip="Loading data..." size="large" />
           ) : isError ? (
             <p>{fetchError}</p>
@@ -288,7 +290,23 @@ const EditShipmentUserData = () => {
             />
           ) : (
             <p>No Data Found</p>
-          )}
+          )} */}
+          <EditForm
+            ref={ref}
+            sd={sd}
+            isFeching={isLoading}
+            isError={isError}
+            fetchError={fetchError}
+            dDate={date.dDate}
+            ndDate={date.ndDate}
+            onFinish={onFinish}
+            handleSelecteName={handleSelecteName}
+            patientNames={patientNames}
+            medicationNames={medicationNames}
+            pad={pad}
+            selectedpatient={selectedpatient}
+            // setData={setData}
+          />
         </div>
         {/* {editForm} */}
       </div>
