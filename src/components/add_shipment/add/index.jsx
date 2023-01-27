@@ -22,7 +22,6 @@ dayjs.tz.setDefault("Asia/Kolkata");
 
 let patientNames = [];
 let medicationNames = [];
-let displayAddForm;
 
 const NewShipment = () => {
   const dispatch = useDispatch();
@@ -180,27 +179,28 @@ const NewShipment = () => {
     }
   };
 
-  if (patientNames.length > 0 && medicationNames !== undefined) {
-    displayAddForm = (
-      <AddForm
-        onFormLayoutChange={onFormLayoutChange}
-        onFinish={onFinish}
-        handleSelecteName={handleSelecteName}
-        patientNames={patientNames}
-        medicationNames={medicationNames}
-        disabledDate={disabledDate}
-        pad={pad}
-        visibility={visibility}
-        ref={ref}
-      />
-    );
-  }
-
   return (
     <>
       <div className="p-4 flex flex-col">
         <h2 className="text-xl">Shipment Add Management</h2>
-        {displayAddForm}
+        {patientNames.length > 0 && medicationNames !== undefined ? (
+          <AddForm
+            onFormLayoutChange={onFormLayoutChange}
+            onFinish={onFinish}
+            handleSelecteName={handleSelecteName}
+            patientNames={patientNames}
+            medicationNames={medicationNames}
+            disabledDate={disabledDate}
+            pad={pad}
+            visibility={visibility}
+            ref={ref}
+          />
+        ) : (
+          <>
+            <p>{patientNames}</p>
+            <p>{medicationNames}</p>
+          </>
+        )}
       </div>
     </>
   );

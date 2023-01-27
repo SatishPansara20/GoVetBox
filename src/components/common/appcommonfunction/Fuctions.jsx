@@ -209,16 +209,16 @@ export const useFetchData = (requesMethod, payload) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     requesMethod,
-    // payload,
-    // getShipment,
-    // AllMedication,
-    // PatientAddress,
-    // ShipmentDetail,
-    // addShipment,
-    // dashboardData,
-    // deleteShipment,
-    // approvedPatientList,
-    // updateShipment,
+    payload,
+  //   getShipment,
+  //   AllMedication,
+  //   PatientAddress,
+  //  // ShipmentDetail,
+  //   addShipment,
+  //   dashboardData,
+  //   deleteShipment,
+  //   //approvedPatientList,
+  //   updateShipment,
   ]);
 
   return { isError, fetchError, isLoading, data };

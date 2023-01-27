@@ -96,9 +96,11 @@ const AddShipment = () => {
     });
   };
 
+  
+
   return (
     <>
-       <RenderTable
+      <RenderTable
         handleSearchChange={handleSearchChange}
         form={form}
         dataSource={dataSource}
