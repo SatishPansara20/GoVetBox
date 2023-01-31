@@ -29,8 +29,20 @@ const items = [
     <AppstoreOutlined style={{ fontSize: "150%" }} />
   ),
   getItem(
-    "Addshipment",
+    "Add Shipment",
     "addshipment",
+    <AppstoreAddOutlined style={{ fontSize: "150%" }} />
+  ),
+
+  getItem(
+    "User Management",
+    "usermanagement",
+    <AppstoreAddOutlined style={{ fontSize: "150%" }} />
+  ),
+
+  getItem(
+    "Patient Managementt",
+    "patientmanagement",
     <AppstoreAddOutlined style={{ fontSize: "150%" }} />
   ),
 ];

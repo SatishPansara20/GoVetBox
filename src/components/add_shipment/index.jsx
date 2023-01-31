@@ -4,7 +4,7 @@ import { useState, useCallback } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import {
   toastData,
-  addShipmentdataToCommonSlice,
+  transformGetShipmentData,
   updateShipmentPayload,
 } from "../../Redux/commonSlice";
 
@@ -60,10 +60,11 @@ const AddShipment = () => {
       setData(response.data.data.data);
       setTotalData(response.data.data.recordsTotal);
     }
+  
   });
   useEffect(() => {
     if (data.length > 0) {
-      dispatch(addShipmentdataToCommonSlice(data));
+      dispatch(transformGetShipmentData(data));
     }
   }, [data, dispatch]);
 

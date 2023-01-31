@@ -14,7 +14,7 @@ const SignIn = () => {
 
   const [userEP, setUserEP] = useState({
     email: "admin.gvb@yopmail.com",
-    password: "123456",
+    password: "1234567",
     remember: true,
   });
 
@@ -47,7 +47,9 @@ const SignIn = () => {
     //Axios login
 
     dispatch(loginAction(values))
-      .then((res) => navigate("/dashboard"))
+      .then((res) => {
+        navigate("/dashboard");
+      })
       .catch((err) => alert(err?.message || "Please try agian!"));
   };
 

@@ -14,7 +14,7 @@ const commonSlice = createSlice({
   name: "common",
   initialState,
   reducers: {
-    addShipmentdataToCommonSlice: {
+    transformGetShipmentData: {
       reducer(state, action) {
         if (action.payload.length > 0) {
           state.updateShipmentPayload = [];
@@ -74,6 +74,6 @@ export const valueofsider = (state) => state.common.sliderCollapsed;
 export const toastData = (state) => state.common.toastData;
 export const updateShipmentPayload = (state) =>
   state.common.updateShipmentPayload;
-export const { addShipmentdataToCommonSlice, toggleSlider, toastAction } =
+export const { transformGetShipmentData, toggleSlider, toastAction } =
   commonSlice.actions;
 export default commonSlice.reducer;

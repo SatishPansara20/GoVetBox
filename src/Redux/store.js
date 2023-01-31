@@ -3,6 +3,8 @@ import reduxApiMiddleware from "./Middleware";
 import thunk from "redux-thunk";
 import AuthSlice from "./AuthSlice";
 import UserSlice from "./UserSlice";
+import UserManagementSlice from "./UserManagementSlice";
+import PatientManagementSlice from "./PatientManagementSlice";
 import commonSlice from "./commonSlice";
 import { userAPI } from "./ReduxApi";
 
@@ -19,6 +21,8 @@ export const store = configureStore({
   reducer: {
     auth: AuthSlice,
     user: UserSlice,
+    usermanagement: UserManagementSlice,
+    patientmanagement: PatientManagementSlice,
     common: commonSlice,
     [userAPI.reducerPath]: userAPI.reducer,
   },

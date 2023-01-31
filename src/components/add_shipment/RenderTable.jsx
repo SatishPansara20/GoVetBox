@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useDispatch } from "react-redux";
 //import { useSelector } from "react-redux";
 import {
-  addShipmentdataToCommonSlice,
+  transformGetShipmentData,
   //updateShipmentPayload,
 } from "../../Redux/commonSlice";
 import {
@@ -51,7 +51,7 @@ const RenderTable = ({
 
   // NOTE: Edit DATA
   const edit = (record) => {
-    //dispatch(addShipmentdataToCommonSlice({ ...record }));
+    //dispatch(transformGetShipmentData({ ...record }));
     navigate(`/addshipment/updateuserData/${record._id}`);
   };
 
@@ -84,7 +84,7 @@ const RenderTable = ({
       const response = await getShipment(shipmentPayload);
 
       sendData(response.data.data.recordsTotal, response.data.data.data);
-      dispatch(addShipmentdataToCommonSlice( response.data.data.data));
+      dispatch(transformGetShipmentData(response.data.data.data));
     } catch (error) {
       console.log("Error while Getting getShipment: ", error);
     }

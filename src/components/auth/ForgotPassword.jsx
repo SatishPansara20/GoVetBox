@@ -1,13 +1,15 @@
 import React from "react";
 import { useState, useRef } from "react";
-import axios from "axios";
-import { useDispatch } from "react-redux"
+import { useDispatch, useSelector } from "react-redux";
 import { UserOutlined } from "@ant-design/icons";
 import { Button, Form } from "antd";
 
 import { toast } from "react-toastify";
 
-import { FORGOT_PASSWORD } from "../../constants/index";
+import {
+  forgotPasswordAction,
+  forgotPasswordData,
+} from "../../Redux/AuthSlice";
 import { InputField } from "../common/FormField";
 import { makeToast } from "../common/appcommonfunction/Fuctions";
 
@@ -21,11 +23,11 @@ dayjs.tz.setDefault("Asia/Kolkata");
 const ForgotPassword = () => {
   //  const [api, contextHolder] = notification.useNotification();
   const dispatch = useDispatch();
+  const response = useSelector(forgotPasswordData);
 
   const formRef = useRef();
   const [email, setEmail] = useState("");
 
-  
   //NOTE: Notifications Banner
   // const openNotificationWithIcon = (notificationData) => {
   //   console.log(notificationData);
@@ -40,51 +42,45 @@ const ForgotPassword = () => {
   //NOTE: Handleing password reset url and notification
 
   const sentPasswordRestLink = async (values) => {
-    try {
-      const response = await axios.post(FORGOT_PASSWORD, {
-        email: values.email,
-      });
-      // console.log(response.data);
-
-      if (response.data.status === 200) {
-        // openNotificationWithIcon({
-        //   type: "success",
-        //   message: "Success",
-        //   description: response.data.message,
-        // });
-
-        makeToast(dispatch, response.data.message, toast.success);
+    dispatch(forgotPasswordAction({ email: values.email }))
+      .then(() => {
+        //  console.log(response);
+        if (response.status === 200) {
+          makeToast(
+            dispatch,
+            response?.message || "Please try agian!",
+            toast.success
+          );
+        } else {
+          makeToast(dispatch, "Please try agian!", toast.warn);
+        }
         formRef?.current.setFieldsValue({
           email: "",
         });
-      }
-    } catch (error) {
-      console.log(error.response);
-      if (error.response) {
-        if (error.response.data.status === 400) {
-          // openNotificationWithIcon({
-          //   type: "warning",
-          //   message: "Warning",
-          //   description: error.response.data.message,
-          // });
-
-          makeToast(dispatch, error.response.data.message, toast.warn);
+      })
+      .catch((error) => {
+        console.log(error);
+        if (error?.status === 400) {
+          makeToast(
+            dispatch,
+            error?.message || "Please try agian!",
+            toast.warn
+          );
+        } else if (error.request) {
+          console.log(
+            `The request was made but not received proper response and The response received is  : ${error.request}`
+          );
+        } else {
+          console.log(
+            `Something happened in setting up the request that triggered an Error as Didn't recevied any response and Error Messages is : ${error.message} `
+          );
         }
-      } else if (error.request) {
-        console.log(
-          `The request was made but not received proper response and The response received is  : ${error.request}`
-        );
-      } else {
-        console.log(
-          `Something happened in setting up the request that triggered an Error as Didn't recevied any response and Error Messages is : ${error.message} `
-        );
-      }
-    }
+      });
   };
 
   const onFinish = (values) => {
     sentPasswordRestLink(values);
-    console.log(values);
+    //console.log(values);
   };
 
   const onFinishFailed = (errorInfo) => {

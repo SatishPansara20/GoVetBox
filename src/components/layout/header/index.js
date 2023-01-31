@@ -20,6 +20,9 @@ const route = [
   { name: "addshipment", path: "Add Shipment" },
   { name: "newshipment", path: "Shipment Add Management" },
   { name: "updateuserData", path: "Update Shipment" },
+  { name: "usermanagement", path: "User Managementt" },
+  { name: "edit", path: "" },
+  { name: "patientmanagement", path: "Patient Management" },
 ];
 const PageHeader = () => {
   const dispatch = useDispatch();
@@ -139,8 +142,6 @@ const PageHeader = () => {
 };
 
 export default PageHeader;
-
-
 
 //  {/* <svg
 //                   xmlns="http://www.w3.org/2000/svg"

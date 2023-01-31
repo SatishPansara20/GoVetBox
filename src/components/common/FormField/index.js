@@ -1,4 +1,4 @@
-import { Form, Select, DatePicker, Input, Button } from "antd";
+import { Form, Select, DatePicker, Input, Button, Image } from "antd";
 
 export const InputField = ({
   id,
@@ -8,6 +8,7 @@ export const InputField = ({
   message,
   handleChange,
   placeholder,
+  disabled,
 }) => {
   return (
     <>
@@ -27,6 +28,7 @@ export const InputField = ({
           size={size}
           onChange={handleChange}
           placeholder={placeholder}
+          disabled={disabled}
         />
       </Form.Item>
     </>
@@ -186,9 +188,26 @@ export const DateField = ({
 export const ButtonField = ({ id, type, className, buttonText }) => {
   return (
     <Form.Item>
-      <Button className="bg-violet-700" type="primary" htmlType="submit">
-        Submit
+      <Button type={type} htmlType={id} className={className}>
+        {buttonText}
       </Button>
+    </Form.Item>
+  );
+};
+
+export const ImageField = ({ id, imageURL, width, alt }) => {
+  return (
+    <Form.Item>
+      <Image
+        id={id}
+        style={{
+          display: "inline-block",
+          borderRadius: "50%",
+        }}
+        width={width}
+        src={imageURL}
+        alt={alt}
+      />
     </Form.Item>
   );
 };

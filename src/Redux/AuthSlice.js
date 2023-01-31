@@ -4,6 +4,9 @@ import {
   API_LOGIN,
   LOGIN_F,
   LOGIN_S,
+  API_FORGOT_PASSWORD,
+  FORGOT_PASSWORD_S,
+  FORGOT_PASSWORD_F,
   LS_AUTHTOKEN,
   LS_USER,
 } from "../constants";
@@ -11,11 +14,11 @@ import {
 const initialState = {
   // Global loader for api
   isLoading: false,
-
   // Auth Data
   isLoggedIn: false,
   token: null,
   userData: {},
+  forgotPasswordData: {},
 };
 
 const loadFromLocalStorage = (data) => {
@@ -46,6 +49,24 @@ export const loginAction = (data) => ({
   },
 });
 
+export const forgotPasswordAction = (data) => ({
+  type: "API",
+  payload: {
+    url: API_FORGOT_PASSWORD,
+    method: "POST",
+    data: data,
+    hideLoader: false,
+    success: (data) => ({
+      type: FORGOT_PASSWORD_S,
+      payload: data,
+    }),
+    error: (data) => ({
+      type: FORGOT_PASSWORD_F,
+      payload: {},
+    }),
+  },
+});
+
 // Reducer
 const loginSlice = createSlice({
   name: "login",
@@ -59,9 +80,6 @@ const loginSlice = createSlice({
     builder.addCase(LOGIN_S, (state, action) => {
       // Default header for auth
 
-      axios.defaults.headers.common["Authorization"] =
-        action.payload.data.accessToken;
-
       try {
         localStorage.setItem(
           LS_AUTHTOKEN,
@@ -69,6 +87,15 @@ const loginSlice = createSlice({
         );
 
         localStorage.setItem(LS_USER, JSON.stringify(action.payload.data));
+      } catch (e) {
+        console.error(e);
+      }
+
+      try {
+        axios.defaults.headers.common["Authorization"] = loadFromLocalStorage(
+          localStorage.getItem(LS_AUTHTOKEN)
+        );
+        //console.log(localStorage.getItem(LS_AUTHTOKEN));
       } catch (e) {
         console.error(e);
       }
@@ -86,8 +113,19 @@ const loginSlice = createSlice({
       state.userData = {};
       state.isLoggedIn = false;
     });
+
+    builder.addCase(FORGOT_PASSWORD_S, (state, action) => {
+      state.forgotPasswordData = action.payload;
+    });
+    builder.addCase(FORGOT_PASSWORD_F, (state, action) => {
+      state.forgotPasswordData = {};
+    });
   },
 });
 
+export const forgotPasswordData = (state) => state.auth.forgotPasswordData;
+export const isLoading = (state) => state.auth.isLoading;
+
 export const { loaderChange } = loginSlice.actions;
+
 export default loginSlice.reducer;

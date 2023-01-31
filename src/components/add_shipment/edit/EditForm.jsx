@@ -39,7 +39,6 @@ const EditForm = React.forwardRef(
     },
     ref
   ) => {
-    console.log(selectedpatient);
     // const onFormLayoutChange = (changedFields, allFields) => {
     //   console.log(allFields[0].value);
     //   // setSelectedPatient(ref.current?.getFieldValue["patientname"]);

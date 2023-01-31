@@ -4,6 +4,9 @@ import AuthGuard from "../components/auth";
 import AddShipment from "../components/add_shipment";
 import NewShipment from "../components/add_shipment/add";
 import EditShipmentUserData from "../components/add_shipment/edit/index";
+import UserManagement from "../components/useranagement/index";
+import UserManagementEdit from "../components/useranagement/edit/index";
+import PatientManagement from "../components/patientmanagement";
 
 const Layout = lazy(() => import("../components/layout/index"));
 const SignIn = lazy(() => import("../pages/SignIn/index"));
@@ -32,6 +35,12 @@ const Routing = () => {
           path="/addshipment/updateuserData/:id"
           element={<EditShipmentUserData />}
         />
+        <Route path="/usermanagement" element={<UserManagement />} />
+        <Route
+          path="/usermanagement/edit/:id"
+          element={<UserManagementEdit />}
+        />
+        <Route path="/patientmanagement" element={<PatientManagement />} />
       </Route>
       <Route path="*" element={<Navigate replace to="/" />} />
     </Routes>
