@@ -23,6 +23,9 @@ const route = [
   { name: "usermanagement", path: "User Managementt" },
   { name: "edit", path: "" },
   { name: "patientmanagement", path: "Patient Management" },
+  { name: "medicationmanagement", path: "Medication Management" },
+  { name: "add", path: "Medication Add" },
+  { name: "view", path: "" },
 ];
 const PageHeader = () => {
   const dispatch = useDispatch();

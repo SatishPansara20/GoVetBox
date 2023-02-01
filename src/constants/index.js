@@ -68,6 +68,30 @@ export const GET_PATIENT_DETAIL_F = `GET_PATIENT_DETAIL_F`;
 export const EDIT_PATIENT_S = `EDIT_PATIENT_S`;
 export const EDIT_PATIENT_F = `EDIT_PATIENT_F`;
 
+export const GET_MEDICATION_LIST_S = `GET_MEDICATION_LIST_S`;
+export const GET_MEDICATION_LIST_F = `GET_MEDICATION_LIST_F`;
+
+export const GET_MEDICATION_DETAILS_S = `GET_ALL_MEDICATION_DETAILS_S`;
+export const GET_MEDICATION_DETAILS_F = `GET_ALL_MEDICATION_DETAILS_F`;
+
+export const GET_SPECIES_LIST_S = `GET_SPECIES_LIST_S`;
+export const GET_SPECIES_LIST_F = `GET_SPECIES_LIST_F`;
+
+export const GET_ALL_ADMINISTRATION_TYPE_S = `GET_ALL_ADMINISTRATION_TYPE_S`;
+export const GET_ALL_ADMINISTRATION_TYPE_F = `GET_ALL_ADMINISTRATION_TYPE_F`;
+
+export const GET_ALL_SIZE_S = `GET_ALL_SIZE_S`;
+export const GET_ALL_SIZE_F = `GET_ALL_SIZE_F`;
+
+export const GET_SIZE_LIST_S = `API_GET_SIZE_LIST_S`;
+export const GET_SIZE_LIST_F = `API_GET_SIZE_LIST_F`;
+
+export const ADD_MEDICATION_S = `ADD_MEDICATION_S`;
+export const ADD_MEDICATION_F = `ADD_MEDICATION_F`;
+
+export const DELETE_MEDICATION_S = `DELETE_MEDICATION_S`;
+export const DELETE_MEDICATION_F = `DELETE_MEDICATION_F`;
+
 // NOTE:API ENDPOINTS
 export const API_LOGIN = `auth/login`;
 export const API_FORGOT_PASSWORD = `/auth/forgotPassword`;
@@ -100,6 +124,17 @@ export const API_BLOCKUNBLOCK_USER = `/api/blockUnblockUser`;
 //1.API_GET_APPPROVED_PATIENT_LIST
 export const API_GET_PATIENT_DETAIL = `/api/getPatientDetail`;
 export const API_EDIT_PATIENT = `/api/editPatient`;
+
+//Medication Management
+export const API_GET_MEDICATION_LIST = `/api/getMedicationList`;
+export const API_GET_MEDICATION_DETAILS = `/api/getMedicationDetail`;
+export const API_GET_SPECIES_LIST = `/api/getSpeciesList`;
+export const API_GET_ALL_ADMINISTRATION_TYPE = `/api/getAllAdministrationType`;
+export const API_GET_ALL_SIZE = `/api/getAllSize`;
+export const API_GET_SIZE_LIST = `/api/getSizeList`;
+export const API_DELETE_MEDICATION = `/api/deleteMedication`;
+export const API_ADD_MEDICATION = `/api/addMedication`;
+
 //NOTE: URL
 
 // UI

@@ -65,7 +65,7 @@ export const editPatient = (data) => ({
     method: "POST",
     data: data,
     hideLoader: false,
-    headers: { "Content-Type": "application/json" },
+    headers: { "Content-Type": "multipart/form-data" },
     success: (data) => ({
       type: EDIT_PATIENT_S,
       payload: data,

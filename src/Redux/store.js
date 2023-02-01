@@ -5,6 +5,7 @@ import AuthSlice from "./AuthSlice";
 import UserSlice from "./UserSlice";
 import UserManagementSlice from "./UserManagementSlice";
 import PatientManagementSlice from "./PatientManagementSlice";
+import MedicationManagementSlice from "./MedicationManagementSlice";
 import commonSlice from "./commonSlice";
 import { userAPI } from "./ReduxApi";
 
@@ -23,6 +24,7 @@ export const store = configureStore({
     user: UserSlice,
     usermanagement: UserManagementSlice,
     patientmanagement: PatientManagementSlice,
+    medicationmanagement: MedicationManagementSlice,
     common: commonSlice,
     [userAPI.reducerPath]: userAPI.reducer,
   },

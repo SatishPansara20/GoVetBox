@@ -55,10 +55,14 @@ const RenderPatientManagementTable = ({
     return () => {};
   }, [editPatientData, dispatch]);
 
+  const setData = (data) => {
+    setOpen(data);
+  };
+
   // NOTE: Edit DATA
   const edit = (record) => {
     setOpen(true);
-    dialogBoxContent = <ViewPatientDetails data={record} />;
+    dialogBoxContent = <ViewPatientDetails data={record} setData={setData} />;
   };
 
   // Table Columns
@@ -171,7 +175,10 @@ const RenderPatientManagementTable = ({
       <div className=" justify-self-start self-center">
         <p>VIEW</p>
       </div>
-      <div className="stroke-2 bg-white justify-self-start self-center  sm:justify-self-end ">
+      <button
+        onClick={handleClose}
+        className="stroke-2 bg-white justify-self-start self-center  sm:justify-self-end "
+      >
         <Avatar
           className="stroke-2"
           style={{
@@ -183,7 +190,7 @@ const RenderPatientManagementTable = ({
           size={64}
           icon={<CloseCircleOutlined />}
         />
-      </div>
+      </button>
     </div>
   );
 

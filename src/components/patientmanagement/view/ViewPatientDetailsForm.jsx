@@ -25,12 +25,18 @@ const type = ["Not Applicable", "Neutered"];
 
 const ViewPatientDetailsForm = React.forwardRef(
   (
-    { userData, isFeching, isError, fetchError, handleSelecteName, onFinish },
+    {
+      userData,
+      dobDdate,
+      isFeching,
+      isError,
+      fetchError,
+      handleSelecteName,
+      onFinish,
+    },
     ref
   ) => {
-    console.log("ViewPatientDetailsForm", userData);
-
-    return (
+       return (
       <>
         {isFeching ? (
           <Spin className="w-full" tip="Loading data..." size="large" />
@@ -38,7 +44,8 @@ const ViewPatientDetailsForm = React.forwardRef(
           <p>{fetchError}</p>
         ) : userData !== undefined &&
           userData !== null &&
-          Object.keys(userData).length > 0 ? (
+          Object.keys(userData).length > 0 &&
+          dobDdate !== "" ? (
           <Form
             ref={ref}
             style={{
@@ -54,7 +61,7 @@ const ViewPatientDetailsForm = React.forwardRef(
               image: userData?.image,
               username: userData?.userDetail?.name,
               name: userData?.name,
-              dob: dayjs(userData?.dob, dateFormate),
+              dob: dayjs(dobDdate, dateFormate),
               age: userData?.age,
               weight: userData?.weight,
               breed: userData?.breed?.name,

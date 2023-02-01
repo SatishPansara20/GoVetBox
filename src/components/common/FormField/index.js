@@ -41,6 +41,7 @@ export const SelectField = ({
   message,
   handleChange,
   SelectFildValues,
+  disabled,
 }) => {
   // console.log(selectFieldLabelName, SelectFildValues);
   if (SelectFildValues !== undefined) {
@@ -56,7 +57,7 @@ export const SelectField = ({
             },
           ]}
         >
-          <Select onChange={handleChange}>
+          <Select onChange={handleChange} disabled={disabled}>
             {SelectFildValues.length > 0 ? (
               SelectFildValues.map((item, i) => {
                 return (

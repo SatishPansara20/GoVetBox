@@ -6,7 +6,11 @@ import { toggleSlider, valueofsider } from "../../../Redux/commonSlice";
 
 import { useLocation, useNavigate } from "react-router-dom";
 
-import { AppstoreOutlined, AppstoreAddOutlined } from "@ant-design/icons";
+import {
+  AppstoreOutlined,
+  AppstoreAddOutlined,
+  ContainerOutlined,
+} from "@ant-design/icons";
 import { Layout, Menu } from "antd";
 
 import { useWindowSize } from "../../common/appcommonfunction/Fuctions";
@@ -45,6 +49,34 @@ const items = [
     "patientmanagement",
     <AppstoreAddOutlined style={{ fontSize: "150%" }} />
   ),
+
+  getItem("Medication Management", "sub1", <AppstoreAddOutlined />, [
+    getItem(
+      "Breed Management",
+      "1",
+      <ContainerOutlined style={{ fontSize: "150%" }} />
+    ),
+    getItem(
+      "Species Management",
+      "2",
+      <ContainerOutlined style={{ fontSize: "150%" }} />
+    ),
+    getItem(
+      "Administration Type",
+      "3",
+      <ContainerOutlined style={{ fontSize: "150%" }} />
+    ),
+    getItem(
+      "Medication Management",
+      "medicationmanagement",
+      <ContainerOutlined style={{ fontSize: "150%" }} />
+    ),
+    getItem(
+      "Patient Size",
+      "4",
+      <ContainerOutlined style={{ fontSize: "150%" }} />
+    ),
+  ]),
 ];
 
 const SideBar = () => {

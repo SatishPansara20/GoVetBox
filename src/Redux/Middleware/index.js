@@ -1,6 +1,7 @@
 import axios from "axios";
 import { API_BASE } from "../../constants";
 import { loaderChange } from "../AuthSlice";
+import { useQuery } from "react-query";
 
 const reduxApiMiddleware = (store) => (next) => (action) => {
   if (next) next(action);
@@ -20,6 +21,8 @@ const reduxApiMiddleware = (store) => (next) => (action) => {
 
     if (!hideLoader) {
       store.dispatch(loaderChange(true));
+
+
       return axios({
         baseURL: API_BASE,
         method,

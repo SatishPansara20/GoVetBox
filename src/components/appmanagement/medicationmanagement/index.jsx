@@ -3,19 +3,17 @@ import { useState } from "react";
 
 import { useSelector, useDispatch } from "react-redux";
 import {
-  getApprovedPatientList,
-  //   getPatientDetail,
-  approvedPatientList,
-  //   patientInfo,
-} from "../../Redux/PatientManagementSlice";
-import { toastData } from "../../Redux/commonSlice";
+  getMedicationList,
+  medicationList,
+} from "../../../Redux/MedicationManagementSlice";
+import { toastData } from "../../../Redux/commonSlice";
 
 import { Form } from "antd";
 
-import { makeToast } from "../common/appcommonfunction/Fuctions";
+import { makeToast } from "../../common/appcommonfunction/Fuctions";
 
 import { toast } from "react-toastify";
-import RenderPatientManagementTable from "./RenderPatientManagementTable";
+import RenderMedicationManagementTable from "./RenderMedicationManagementTable";
 
 // const delay = () =>
 //   new Promise((res) =>
@@ -25,9 +23,9 @@ import RenderPatientManagementTable from "./RenderPatientManagementTable";
 //     }, 2000)
 //   );
 
-const PatientManagement = () => {
+const MedicationManagement = () => {
   const receivedToastData = useSelector(toastData);
-  const allApprovedPatientList = useSelector(approvedPatientList);
+  const allMedicationList = useSelector(medicationList);
 
   const dispatch = useDispatch();
 
@@ -55,10 +53,10 @@ const PatientManagement = () => {
     if (receivedToastData !== "") {
       makeToast(dispatch, receivedToastData, toast.success);
       setIsFeching(true);
-      dispatch(getApprovedPatientList(shipmentPayload));
+      dispatch(getMedicationList(shipmentPayload));
     } else {
       setIsFeching(true);
-      dispatch(getApprovedPatientList(shipmentPayload));
+      dispatch(getMedicationList(shipmentPayload));
     }
   }, [dispatch, shipmentPayload, receivedToastData]);
 
@@ -66,17 +64,17 @@ const PatientManagement = () => {
 
   React.useEffect(() => {
     const getData = async () => {
-      if (isFeching && allApprovedPatientList?.length < 0) {
-        console.log("Loading Your Data");
-      } else if (allApprovedPatientList?.length > 0) {
-        //await delay();
+      if (isFeching && allMedicationList?.status !== 200) {
+        // console.log("Loading Your Data");
+      } else if (allMedicationList?.status === 200) {
+       // await delay();
         setIsFeching(false);
-        setDataSource(allApprovedPatientList);
-        setTotalData(allApprovedPatientList?.length);
+        setDataSource(allMedicationList?.data?.data);
+        setTotalData(allMedicationList?.data?.recordsTotal);
       }
     };
     getData();
-  }, [allApprovedPatientList, isFeching]);
+  }, [allMedicationList, isFeching]);
 
   const handleChange = (pagination, filters, sorter) => {
     // order:"ascend"  order:"descend" sorter.columnKey
@@ -110,7 +108,7 @@ const PatientManagement = () => {
   //
   return (
     <>
-      <RenderPatientManagementTable
+      <RenderMedicationManagementTable
         handleSearchChange={handleSearchChange}
         form={form}
         dataSource={dataSource}
@@ -125,4 +123,4 @@ const PatientManagement = () => {
   );
 };
 
-export default PatientManagement;
+export default MedicationManagement;
