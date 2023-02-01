@@ -10,6 +10,9 @@ import Loader from "../components/common/loader";
 import { setupAxios } from "../utils";
 import { ErrorBoundary } from "../components/Error";
 
+
+//import { QueryClient,QueryClientProvider } from "react-query";    <QueryClientProvider client={queryClient}>  </QueryClientProvider>
+// const queryClient = new QueryClient();
 // const { PUBLIC_URL } = process.env;
 
 setupAxios(axios, store);
@@ -20,13 +23,17 @@ const AppContainer = () => (
   <>
     <ErrorBoundary>
       <Provider store={store}>
+    
         <Suspense fallback={<Loader isSuspense />}>
           <Loader>
-            <BrowserRouter>
-              <Routes />
-            </BrowserRouter>
+           
+              <BrowserRouter>
+                <Routes />
+              </BrowserRouter>
+            
           </Loader>
         </Suspense>
+       
       </Provider>
     </ErrorBoundary>
     <ToastContainer />

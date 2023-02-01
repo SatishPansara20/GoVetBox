@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { v4 as uuid } from "uuid";
+//import { useQuery } from "react-query";  import axios from "axios";
 
 import {
   getAllSize,
   allSize,
 } from "../../../../Redux/MedicationManagementSlice";
-import { Table } from "antd";
 import { useDispatch, useSelector } from "react-redux";
+import { Table } from "antd";
 
 let administrationData = [];
 
@@ -34,28 +35,28 @@ const AdministrationTypeTable = ({ data }) => {
       setAdministrationSizes(allSizeResponse?.data);
     }
   }, [allSizeResponse, isLoading]);
+
   console.log(administrationSizes);
 
   useEffect(() => {
     if (administrationSizes?.length > 0) {
-        administrationData = [];
-        data?.map((item) => {
-          return administrationData.push({
-            administrationTypeName: item.administrationType.name,
-            administrationTypeNameDataSource: {
-              dataSource: item.sizes.map((item, i) => {
-                return {
-                  key: uuid(),
-                  size: administrationSizes[i]?.name,
-                  amount: item.amount,
-                  dosage: item.dosage,
-                };
-              }),
-            },
-          });
+      administrationData = [];
+      data?.map((item) => {
+        return administrationData.push({
+          administrationTypeName: item.administrationType.name,
+          administrationTypeNameDataSource: {
+            dataSource: item.sizes.map((item, i) => {
+              return {
+                key: uuid(),
+                size: administrationSizes[i]?.name,
+                amount: item.amount,
+                dosage: item.dosage,
+              };
+            }),
+          },
         });
+      });
     }
-   
 
     return () => {};
   }, [data, administrationSizes]);
@@ -120,3 +121,31 @@ const AdministrationTypeTable = ({ data }) => {
 };
 
 export default AdministrationTypeTable;
+
+// const {
+//     data: response,
+//     isLoading,
+//     isSuccess,
+//   } = useQuery(
+//     "query-administrationSizes",
+//     async () => {
+//       return await axios.post(
+//         "http://202..117.92:7155/admin_v1/api/getAllSize",{}
+//       );
+//     },
+//     {
+//       enabled: false,
+//       onSuccess: (res) => {
+//         console.log(res.data);
+//       },
+//       onError: (err) => {},
+//     }
+//   );
+
+//   useEffect(() => {
+//     if (isLoading) {
+//       console.log("Loding...");
+//     } else if (isSuccess) {
+//       setAdministrationSizes(response?.data);
+//     }
+//   }, [isLoading, isSuccess, response]);
