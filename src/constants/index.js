@@ -132,8 +132,8 @@ export const API_GET_SPECIES_LIST = `/api/getSpeciesList`;
 export const API_GET_ALL_ADMINISTRATION_TYPE = `/api/getAllAdministrationType`;
 export const API_GET_ALL_SIZE = `/api/getAllSize`;
 export const API_GET_SIZE_LIST = `/api/getSizeList`;
-export const API_DELETE_MEDICATION = `/api/deleteMedication`;
 export const API_ADD_MEDICATION = `/api/addMedication`;
+export const API_DELETE_MEDICATION = `api/deleteMedication`;
 
 //NOTE: URL
 

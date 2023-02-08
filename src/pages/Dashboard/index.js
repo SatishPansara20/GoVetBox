@@ -1,6 +1,5 @@
 import React from "react";
 
-
 import { Card, Spin } from "antd";
 
 import { useFetchData } from "../../components/common/appcommonfunction/Fuctions";

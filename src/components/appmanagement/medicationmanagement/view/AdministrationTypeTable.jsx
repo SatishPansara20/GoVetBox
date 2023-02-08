@@ -1,65 +1,41 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { v4 as uuid } from "uuid";
 //import { useQuery } from "react-query";  import axios from "axios";
 
-import {
-  getAllSize,
-  allSize,
-} from "../../../../Redux/MedicationManagementSlice";
-import { useDispatch, useSelector } from "react-redux";
 import { Table } from "antd";
 
 let administrationData = [];
 
-const AdministrationTypeTable = ({ data }) => {
-  const dispatch = useDispatch();
-  const allSizeResponse = useSelector(allSize);
+const generates = (data, administrationSizes) => {
+  administrationData = [];
+  data?.map((item) => {
+    const demo = {
+      administrationTypeName: item.administrationType.name,
+      administrationTypeNameDataSource: {
+        dataSource: item.sizes.map((item, i) => {
+          return {
+            key: uuid(),
+            size: administrationSizes[i]?.name,
+            amount: item.amount,
+            dosage: item.dosage,
+          };
+        }),
+      },
+    };
+    console.log(demo);
+    return administrationData.push(demo);
+  });
+};
 
-  const [isLoading, setIsLoading] = useState(true);
-  const [administrationSizes, setAdministrationSizes] = useState([]);
+const AdministrationTypeTable = ({ data, administrationSizes }) => {
+  // console.log("administrationSizes", administrationSizes);
+  // console.log("data", data);
+  // useEffect(() => {
+  generates(data, administrationSizes);
+  // }, [administrationSizes, data]);
+  // console.log("administrationData", administrationData);
 
-  useEffect(() => {
-    try {
-      setIsLoading(true);
-      dispatch(getAllSize());
-      setIsLoading(false);
-    } catch (e) {
-      console.log("While Getting Size Types", e);
-    }
-  }, [dispatch, setIsLoading]);
-
-  useEffect(() => {
-    if (isLoading && allSizeResponse?.status !== 200) {
-      console.log("Loading");
-    } else {
-      setAdministrationSizes(allSizeResponse?.data);
-    }
-  }, [allSizeResponse, isLoading]);
-
-  console.log(administrationSizes);
-
-  useEffect(() => {
-    if (administrationSizes?.length > 0) {
-      administrationData = [];
-      data?.map((item) => {
-        return administrationData.push({
-          administrationTypeName: item.administrationType.name,
-          administrationTypeNameDataSource: {
-            dataSource: item.sizes.map((item, i) => {
-              return {
-                key: uuid(),
-                size: administrationSizes[i]?.name,
-                amount: item.amount,
-                dosage: item.dosage,
-              };
-            }),
-          },
-        });
-      });
-    }
-
-    return () => {};
-  }, [data, administrationSizes]);
+  // console.log("administrationData", administrationData.length);
 
   const columns = [
     {
@@ -98,8 +74,8 @@ const AdministrationTypeTable = ({ data }) => {
   return (
     <>
       <div>
-        {" "}
-        {administrationData.map((item, i) => {
+        
+        {administrationData?.map((item, i) => {
           return (
             <React.Fragment key={i}>
               <div>

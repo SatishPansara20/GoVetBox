@@ -57,7 +57,7 @@ export const getMedicationList = (data) => ({
   },
 });
 
-export const  getMedicationDetail = (data) => ({
+export const getMedicationDetail = (data) => ({
   type: "API",
   payload: {
     url: API_GET_MEDICATION_DETAILS,
@@ -300,7 +300,7 @@ const MedicationManagementSlice = createSlice({
       state.sizeList = {};
     });
 
-      //NOTE: ADD_MEDICATION
+    //NOTE: ADD_MEDICATION
     builder.addCase(ADD_MEDICATION_S, (state, action) => {
       state.addMedicationInfo = {};
       const response = action.payload;
@@ -341,6 +341,8 @@ export const allAdministrationType = (state) =>
   state.medicationmanagement.allAdministrationType;
 export const allSize = (state) => state.medicationmanagement.allSize;
 export const sizeList = (state) => state.medicationmanagement.sizeList;
+export const addMedicationInfo = (state) =>
+  state.medicationmanagement.addMedicationInfo;
 
 export const deleteMedicationInfo = (state) =>
   state.medicationmanagement.deleteMedicationInfo;

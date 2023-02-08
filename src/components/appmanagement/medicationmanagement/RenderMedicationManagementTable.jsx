@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import {  useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 
 import {
@@ -8,7 +8,7 @@ import {
 } from "../../../Redux/MedicationManagementSlice";
 import { toastAction } from "../../../Redux/commonSlice";
 
-import { Form, Table, Typography, Avatar } from "antd";
+import { Form, Table, Typography, Avatar, Button, Skeleton } from "antd";
 
 import { Input } from "antd";
 import Column from "antd/es/table/Column";
@@ -76,19 +76,22 @@ const RenderMedicationManagementTable = ({
     setOpen(false);
   };
 
-  const handleAgree = async () => {
+  const handleAgree = () => {
     setOpen(false);
+    console.log("DeleteRecord", deleteRecord);
     try {
-      const response = await deleteMedication({
-        _id: deleteRecord._id,
-      });
-      if (response.data.status === 200) {
-        makeToast(dispatch, response.data.message, toast.success);
+      const response = dispatch(
+        deleteMedication({
+          _id: deleteRecord._id,
+        })
+      );
+      if (response?.data?.status === 200) {
+        makeToast(dispatch, response?.data?.message, toast.success);
       } else {
-        makeToast(dispatch, response.data.message, toast.info);
+        makeToast(dispatch, response?.data?.message, toast.info);
       }
     } catch (error) {
-      console.log("Error while Getting AllMedication: ", error);
+      console.log("Error while Getting deleteMedication: ", error);
     }
   };
   // Table Columns
@@ -161,6 +164,14 @@ const RenderMedicationManagementTable = ({
               onChange={handleSearchChange}
             />
           </div>
+          <Link
+            className="justify-self-start self-center  sm:justify-self-end "
+            to="/medicationmanagement/add"
+          >
+            <Button className="bg-sky-600" type="primary">
+              ADD
+            </Button>
+          </Link>
         </div>
 
         <Form className="inline-block p-2" form={form} component={false}>
@@ -171,7 +182,26 @@ const RenderMedicationManagementTable = ({
             dataSource={isError ? console.log(fetchError) : dataSource}
             rowKey={() => uuid()}
             inputType="text"
-            columns={columns}
+            // columns={columns}
+            columns={
+              loading
+                ? columns.map((column) => {
+                    return {
+                      ...column,
+                      render: function renderPlaceholder() {
+                        return (
+                          <Skeleton
+                            key={column.dataIndex}
+                            title={true}
+                            paragraph={false}
+                            active={true}
+                          />
+                        );
+                      },
+                    };
+                  })
+                : columns
+            }
             size="small"
             pagination={false}
             onChange={handleChange}
