@@ -1,5 +1,4 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-//import dayjs from "dayjs";
 
 export const userAPI = createApi({
   reducerPath: "api",
