@@ -13,8 +13,10 @@ const SignIn = () => {
   const navigate = useNavigate();
 
   const [userEP, setUserEP] = useState({
-    email: "admin.gvb@yopmail.com",
-    password: "1234567",
+    // email: "admin.gvb@yopmail.com",
+    // password: "1234567",
+    email: "",
+    password: "",
     remember: true,
   });
 
@@ -96,6 +98,7 @@ const SignIn = () => {
                       autoComplete="off"
                     >
                       <Form.Item
+                        style={{ marginBottom: "6px" }}
                         name="email"
                         className="bg-white rounded-md"
                         rules={[
@@ -135,7 +138,7 @@ const SignIn = () => {
                         />
                       </Form.Item>
 
-                      <Form.Item>
+                      <Form.Item style={{ marginBottom: "0px" }}>
                         <div className="flex">
                           <Form.Item
                             className="justify-self-start"
@@ -150,7 +153,7 @@ const SignIn = () => {
 
                           <a
                             className="login-form-forgot flex-grow justify-self-end text-end underline hover:text-white hover:underline"
-                            href="/forgotPassword"
+                            href="/testcustomfuction"
                           >
                             Forgot password?
                           </a>

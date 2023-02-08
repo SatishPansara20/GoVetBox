@@ -8,7 +8,7 @@ import {
 } from "../../../Redux/MedicationManagementSlice";
 import { toastAction } from "../../../Redux/commonSlice";
 
-import { Form, Table, Typography, Avatar } from "antd";
+import { Form, Table, Typography, Avatar, Skeleton } from "antd";
 
 import { Input } from "antd";
 import Column from "antd/es/table/Column";
@@ -171,7 +171,26 @@ const RenderMedicationManagementTable = ({
             dataSource={isError ? console.log(fetchError) : dataSource}
             rowKey={() => uuid()}
             inputType="text"
-            columns={columns}
+             // columns={columns}
+             columns={
+              loading
+                ? columns.map((column) => {
+                    return {
+                      ...column,
+                      render: function renderPlaceholder() {
+                        return (
+                          <Skeleton
+                            key={column.dataIndex}
+                            title={true}
+                            paragraph={false}
+                            active={true}
+                          />
+                        );
+                      },
+                    };
+                  })
+                : columns
+            }
             size="small"
             pagination={false}
             onChange={handleChange}

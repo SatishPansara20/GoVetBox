@@ -10,6 +10,7 @@ import PatientManagement from "../components/patientmanagement";
 import MedicationManagement from "../components/appmanagement/medicationmanagement/index";
 import MedicationManagementAdd from "../components/appmanagement/medicationmanagement/add/index";
 import MedicationManagementView from "../components/appmanagement/medicationmanagement/view/index";
+import TestCustomFuction from "../components/common/appcommonfunction/TestCustomfuction";
 
 const Layout = lazy(() => import("../components/layout/index"));
 const SignIn = lazy(() => import("../pages/SignIn/index"));
@@ -20,6 +21,7 @@ const Routing = () => {
   return (
     <Routes>
       <Route path="/signin" element={<SignIn />} />
+      <Route path="/testcustomfuction" element={<TestCustomFuction />} />
       <Route path="/forgotPassword" element={<ForgotPassword />} />
       <Route
         path="/"
