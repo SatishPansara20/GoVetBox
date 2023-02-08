@@ -5,17 +5,15 @@ import { useSelector, useDispatch } from "react-redux";
 import {
   getMedicationList,
   medicationList,
-  addMedicationInfo,
 } from "../../../Redux/MedicationManagementSlice";
-import { toastAction, toastData } from "../../../Redux/commonSlice";
+import { toastData } from "../../../Redux/commonSlice";
 
-import { Form, Spin } from "antd";
+import { Form } from "antd";
 
 import { makeToast } from "../../common/appcommonfunction/Fuctions";
 
 import { toast } from "react-toastify";
 import RenderMedicationManagementTable from "./RenderMedicationManagementTable";
-import { useLocation } from "react-router-dom";
 
 // const delay = () =>
 //   new Promise((res) =>
@@ -28,10 +26,8 @@ import { useLocation } from "react-router-dom";
 const MedicationManagement = () => {
   const receivedToastData = useSelector(toastData);
   const allMedicationList = useSelector(medicationList);
-  const addMedicationInfoResponse = useSelector(addMedicationInfo);
 
   const dispatch = useDispatch();
-  const location = useLocation();
 
   const [dataSource, setDataSource] = useState([]);
 
@@ -39,8 +35,6 @@ const MedicationManagement = () => {
 
   const [totalData, setTotalData] = useState(0);
   const [isFeching, setIsFeching] = useState(true);
-  const [loaderForAdd, setLoaderForAdd] = useState(false);
-  //const [addRequestChecker, setAddRequestChecker] = useState(false);
   const [shipmentPayload, setShipmentPayload] = useState({
     length: 10,
     search: "",
@@ -66,53 +60,14 @@ const MedicationManagement = () => {
     }
   }, [dispatch, shipmentPayload, receivedToastData]);
 
-  // }
-  React.useEffect(() => {
-    if (
-      location?.state?.addRequestCreated &&
-      location?.state?.addRequestCreated !== null
-    ) {
-      if (!Object.keys(addMedicationInfoResponse).length) {
-        console.log("We Are not Change");
-        console.log(location?.state);
-        setLoaderForAdd(true);
-      } else {
-        setLoaderForAdd(false);
-        Object.assign(location?.state, { addRequestCreated: false });
-        console.log(location?.state);
-        dispatch(toastAction(addMedicationInfoResponse?.message));
-      }
-    } else {
-      if (location?.state !== null)
-        Object.assign(location?.state, { addRequestCreated: false });
-
-      setLoaderForAdd(false);
-    }
-  }, [
-    addMedicationInfoResponse,
-    addMedicationInfoResponse?.message,
-    addMedicationInfoResponse?.status,
-    dispatch,
-    location?.state,
-  ]);
-
-  React.useEffect(() => {
-    if (
-      receivedToastData === "Medication added successfully." &&
-      receivedToastData !== "" &&
-      location?.state?.addRequestCreated
-    ) {
-      setLoaderForAdd(false);
-      makeToast(dispatch, receivedToastData, toast.success);
-      dispatch(toastAction(""));
-      Object.assign(location?.state, { addRequestCreated: false });
-    }
-  }, [dispatch, location.state, receivedToastData]);
+  // React.useEffect(() => {}, [dispatch, shipmentPayload]);
 
   React.useEffect(() => {
     const getData = async () => {
       if (isFeching && allMedicationList?.status !== 200) {
+        // console.log("Loading Your Data");
       } else if (allMedicationList?.status === 200) {
+       // await delay();
         setIsFeching(false);
         setDataSource(allMedicationList?.data?.data);
         setTotalData(allMedicationList?.data?.recordsTotal);
@@ -153,21 +108,16 @@ const MedicationManagement = () => {
   //
   return (
     <>
-      {loaderForAdd ? (
-        <Spin className="w-full" tip="Loading data..." size="large" />
-      ) : (
-        <RenderMedicationManagementTable
-          handleSearchChange={handleSearchChange}
-          form={form}
-          dataSource={dataSource}
-          handleChange={handleChange}
-          onShowSizeChange={onShowSizeChange}
-          totalData={totalData}
-          shipmentPayload={shipmentPayload}
-          isFeching={isFeching}
-        />
-      )}
-
+      <RenderMedicationManagementTable
+        handleSearchChange={handleSearchChange}
+        form={form}
+        dataSource={dataSource}
+        handleChange={handleChange}
+        onShowSizeChange={onShowSizeChange}
+        totalData={totalData}
+        shipmentPayload={shipmentPayload}
+        isFeching={isFeching}
+      />
       {/* <p className=" bg-slate-400 uppercase">getSizeList</p> */}
     </>
   );

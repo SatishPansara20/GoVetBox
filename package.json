@@ -17,7 +17,6 @@
     "dayjs": "^1.11.7",
     "env-cmd": "^10.1.0",
     "eslint-plugin-react": "^7.31.8",
-    "query-string": "^8.1.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-hook-form": "^7.41.0",

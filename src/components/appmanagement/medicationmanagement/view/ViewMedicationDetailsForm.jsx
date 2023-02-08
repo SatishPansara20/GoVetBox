@@ -1,10 +1,5 @@
 import React from "react";
-import { useState, useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import {
-  getAllSize,
-  allSize,
-} from "../../../../Redux/MedicationManagementSlice";
+// import { useState } from "react";
 
 import { Form, Spin } from "antd";
 import AdministrationTypeTable from "./AdministrationTypeTable";
@@ -13,40 +8,15 @@ import { SelectField, InputField } from "../../../common/FormField/index";
 
 const ViewMedicationDetailsForm = React.forwardRef(
   ({ userData, isFeching }, ref) => {
-    const dispatch = useDispatch();
-    const allSizeResponse = useSelector(allSize);
-
-    const [isLoading, setIsLoading] = useState(true);
-    const [administrationSizes, setAdministrationSizes] = useState([]);
-
-    useEffect(() => {
-      try {
-        setIsLoading(true);
-        dispatch(getAllSize());
-        setIsLoading(false);
-      } catch (e) {
-        console.log("While Getting Size Types", e);
-      }
-    }, [dispatch, setIsLoading]);
-
-    useEffect(() => {
-      if (isLoading && allSizeResponse?.status !== 200) {
-        console.log("Loading");
-      } else {
-        setAdministrationSizes(allSizeResponse?.data);
-      }
-    }, [allSizeResponse, isLoading]);
-
     return (
       <>
-        {isLoading ? (
+        {isFeching ? (
           <Spin className="w-full" tip="Loading data..." size="large" />
         ) : userData !== undefined &&
           userData !== null &&
-          Object.keys(userData).length > 0 &&
-          administrationSizes !== undefined &&
-          administrationSizes?.length > 0 ? (
+          Object.keys(userData).length > 0 ? (
           <>
+            {" "}
             <Form
               ref={ref}
               style={{
@@ -87,10 +57,7 @@ const ViewMedicationDetailsForm = React.forwardRef(
                 </div>
               </div>
             </Form>
-            <AdministrationTypeTable
-              data={userData?.medicationDetail}
-              administrationSizes={administrationSizes}
-            />
+            <AdministrationTypeTable data={userData?.medicationDetail} />
           </>
         ) : (
           <p>No Data Found</p>

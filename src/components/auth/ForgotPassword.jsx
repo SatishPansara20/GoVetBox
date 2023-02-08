@@ -55,7 +55,7 @@ const ForgotPassword = () => {
           makeToast(dispatch, "Please try agian!", toast.warn);
         }
         formRef?.current.setFieldsValue({
-          email: "abc@example.com",
+          email: "",
         });
       })
       .catch((error) => {
@@ -80,7 +80,6 @@ const ForgotPassword = () => {
 
   const onFinish = (values) => {
     sentPasswordRestLink(values);
-
     //console.log(values);
   };
 
