@@ -1,6 +1,11 @@
+import React, { useState, useEffect, useRef } from "react";
 
+import { useDispatch, useSelector } from "react-redux";
 
-import { useState, useEffect, useRef } from "react";
+import { testAxios, t_data } from "../../../Redux/commonSlice";
+
+import { useQuery } from "react-query";
+
 import {
   useAnimation,
   useDebounce,
@@ -11,6 +16,7 @@ import {
 } from "./Fuctions";
 
 import "./style.scss";
+import axios from "axios";
 
 const Ball = ({ innerStyle }) => (
   <div
@@ -26,80 +32,75 @@ const Ball = ({ innerStyle }) => (
 );
 
 const data = [
-  {
-    image: "https://source.unsplash.com/lxuB4abGzXc/800x1000",
-    width: 800,
-    height: 1000,
-  },
-
-  {
-    image: "https://source.unsplash.com/d30sszrW7Vw/800x800",
-    width: 800,
-    height: 800,
-  },
-
-  {
-    image: "https://source.unsplash.com/mDuluxr50Ew/800x500",
-    width: 800,
-    height: 500,
-  },
-  {
-    image: "https://source.unsplash.com/KX2mdxPYOtA/800x1100",
-    width: 800,
-    height: 1100,
-  },
-
-  {
-    image: "https://source.unsplash.com/oNoctqY9Oso/800x1200",
-    width: 800,
-    height: 1200,
-  },
-
-  {
-    image: "https://source.unsplash.com/-SFhuMwFClk/800x900",
-    width: 800,
-    height: 900,
-  },
-  {
-    image: "https://source.unsplash.com/hDqLoCCGOdU/800x1000",
-    width: 800,
-    height: 1000,
-  },
-
-  {
-    image: "https://source.unsplash.com/UZ3V6AV5y4o/800x500",
-    width: 800,
-    height: 500,
-  },
-  {
-    image: "https://source.unsplash.com/vlLH_kn-_h8/800x1200",
-    width: 800,
-    height: 1200,
-  },
-  {
-    image: "https://source.unsplash.com/TGvIuQG0AXw/800x1100",
-    width: 800,
-    height: 1100,
-  },
-  {
-    image: "https://source.unsplash.com/pBLJBHbtv0c/800x1000",
-    width: 800,
-    height: 1000,
-  },
+  // {
+  //   image: "https://source.unsplash.com/lxuB4abGzXc/800x1000",
+  //   width: 800,
+  //   height: 1000,
+  // },
+  // {
+  //   image: "https://source.unsplash.com/d30sszrW7Vw/800x800",
+  //   width: 800,
+  //   height: 800,
+  // },
+  // {
+  //   image: "https://source.unsplash.com/mDuluxr50Ew/800x500",
+  //   width: 800,
+  //   height: 500,
+  // },
+  // {
+  //   image: "https://source.unsplash.com/KX2mdxPYOtA/800x1100",
+  //   width: 800,
+  //   height: 1100,
+  // },
+  // {
+  //   image: "https://source.unsplash.com/oNoctqY9Oso/800x1200",
+  //   width: 800,
+  //   height: 1200,
+  // },
+  // {
+  //   image: "https://source.unsplash.com/-SFhuMwFClk/800x900",
+  //   width: 800,
+  //   height: 900,
+  // },
+  // {
+  //   image: "https://source.unsplash.com/hDqLoCCGOdU/800x1000",
+  //   width: 800,
+  //   height: 1000,
+  // },
+  // {
+  //   image: "https://source.unsplash.com/UZ3V6AV5y4o/800x500",
+  //   width: 800,
+  //   height: 500,
+  // },
+  // {
+  //   image: "https://source.unsplash.com/vlLH_kn-_h8/800x1200",
+  //   width: 800,
+  //   height: 1200,
+  // },
+  // {
+  //   image: "https://source.unsplash.com/TGvIuQG0AXw/800x1100",
+  //   width: 800,
+  //   height: 1100,
+  // },
+  // {
+  //   image: "https://source.unsplash.com/pBLJBHbtv0c/800x1000",
+  //   width: 800,
+  //   height: 1000,
+  // },
 ];
 
 const Content = () => {
   const terms = [
-    "stars",
-    "birds",
-    "puppy",
-    "nature",
-    "snow",
-    "cafe",
-    "hipster",
-    "startup",
-    "salad",
-    "funny",
+    // "stars",
+    // "birds",
+    // "puppy",
+    // "nature",
+    // "snow",
+    // "cafe",
+    // "hipster",
+    // "startup",
+    // "salad",
+    // "funny",
   ];
 
   const images = terms.map((term, i) => (
@@ -114,6 +115,48 @@ const Content = () => {
 };
 
 export default function TestCustomfuction() {
+  const dispatch = useDispatch();
+
+  const response = useSelector(t_data);
+
+  const [isFeching, setIsFeching] = useState(true);
+
+  React.useEffect(() => {
+    setIsFeching(true);
+    dispatch(testAxios());
+  }, [dispatch]);
+
+  React.useEffect(() => {
+    if (isFeching && response.length < 0) {
+      console.log("Loading Your Post");
+    } else if (response.length) {
+      //await delay();
+      console.log("TestCustomfuction", response);
+    }
+  }, [response, isFeching]);
+
+  // const {
+  //   isLoading,
+  //   isSuccess,
+  //   error,
+  //   data: res,
+  // } = useQuery("repoData", () =>
+  //   axios({
+  //     url: "https://jsonplaceholder.typicode.com/posts",
+  //     method: "get",
+  //   })
+  // );
+
+  // React.useEffect(() => {
+  //   if (isLoading) {
+  //     console.log("'Loading...'");
+  //   } else if (error) {
+  //     console.log("An error has occurred: " + error.message);
+  //   } else if (isSuccess) {
+  //     console.log(res);
+  //   }
+  // }, [error, isLoading, isSuccess, res]);
+
   // State and setters for ...
   // Search term
   const [searchTerm, setSearchTerm] = useState("");
@@ -230,8 +273,8 @@ export default function TestCustomfuction() {
       </div>
 
       <div>
-      <button className="button">Button</button>
-    </div>
+        <button className="button">Button</button>
+      </div>
       <div>
         {isModalOpen ? (
           <div

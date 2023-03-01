@@ -102,7 +102,7 @@ const MedicationManagement = () => {
       ...shipmentPayload,
       length: Number(pageSize),
       start: Number(page * 10 - 10),
-    });
+    }); 
   };
 
   //

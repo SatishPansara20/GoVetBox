@@ -111,7 +111,7 @@ const SideBar = () => {
 
     const divElement = document.createElement("div");
 
-    divElement.style.height = "10%";
+    divElement.style.height = "53px";
     divElement.style.width = "100%";
     divElement.style.padding = "2%";
     divElement.style.background = "#a8b2c0";
@@ -140,12 +140,6 @@ const SideBar = () => {
     }
   }, [size, addflag, removeflag]);
 
-  // const handleClick = (e) => {
-  //   setCurrent(e.key);
-  //   navigate(`/${e.key}`);
-  //   dispatch(toggleSlider());
-  // };
-
   const onClick = (e) => {
     setCurrent(e.key);
     navigate(`/${e.key}`);
@@ -156,11 +150,11 @@ const SideBar = () => {
     <>
       <Sider
         trigger={null}
-        breakpoint={"xl"}
         width={250}
         collapsible
         collapsed={collapsed}
         collapsedWidth={0}
+        breakpoint="md"
       >
         <div id="main-div" className=" flex flex-col h-full bg-white">
           <Menu

@@ -1,6 +1,7 @@
 import axios from "axios";
 import { API_BASE } from "../../constants";
 import { loaderChange } from "../AuthSlice";
+// import { useQuery } from "react-query";
 
 const reduxApiMiddleware = (store) => (next) => (action) => {
   if (next) next(action);
@@ -20,6 +21,30 @@ const reduxApiMiddleware = (store) => (next) => (action) => {
 
     if (!hideLoader) {
       store.dispatch(loaderChange(true));
+
+      // const {
+      //   isLoading,
+      //   isSuccess,
+      //   isError,
+      //   error: err,
+      //   data: res,
+      // } = useQuery("repoData", () =>
+      //   axios({
+      //     baseURL: API_BASE,
+      //     method,
+      //     url,
+      //     data,
+      //     headers,
+      //   })
+      // );
+
+      // return isLoading
+      //   ? console.log("Loadign Your Data")
+      //   : isError
+      //   ? store.dispatch(error(err))
+      //   : isSuccess
+      //   ? store.dispatch(success(res))
+      //   : console.log("Somthing Failed");
 
       return axios({
         baseURL: API_BASE,

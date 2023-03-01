@@ -88,18 +88,23 @@ const PageHeader = () => {
         }}
       >
         <div className=" flex flex-col h-full w-full">
-          <div className="bg-white h-fit w-full border-b-2">
-            <div className=" flex items-center justify-between p-2  ">
-              <Button
-                className="trigger inline-block w-fit h-full justify-self-start mr-2 border-none"
-                onClick={hadleSidebarClick}
-                icon={<MenuFoldOutlined />}
-              ></Button>
-              <p className="w-fit text-4xl h-fit justify-self-center md:invisible">
+          <div className="bg-white h-14 w-full border-b-2 pl-2 pr-2">
+            <div className=" flex justify-center items-center h-14">
+              <div>
+                <Button
+                  className="trigger h-full  bg-gray-50  border-none flex items-start "
+                  onClick={hadleSidebarClick}
+                  icon={<MenuFoldOutlined style={{ fontSize: "22px" }} />}
+                ></Button>
+              </div>
+              <p
+                className=" flex text-4xl w-full h-full justify-center items-center
+               md:invisible"
+              >
                 Box
               </p>
               <Dropdown
-                className="bg-white h-fit justify-self-end w-fit"
+                className="bg-white  justify-self-end "
                 menu={{
                   items,
                 }}

@@ -11,13 +11,15 @@ import { setupAxios } from "../utils";
 import { ErrorBoundary } from "../components/Error";
 
 
-//import { QueryClient,QueryClientProvider } from "react-query";    <QueryClientProvider client={queryClient}>  </QueryClientProvider>
-// const queryClient = new QueryClient();
+import { QueryClient, QueryClientProvider } from 'react-query';
+
 // const { PUBLIC_URL } = process.env;
 
 setupAxios(axios, store);
 
 //import LoginPage from "../pages/SignIn/LoginPage";
+
+const queryClient = new QueryClient();
 
 const AppContainer = () => (
   <>
@@ -26,11 +28,11 @@ const AppContainer = () => (
     
         <Suspense fallback={<Loader isSuspense />}>
           <Loader>
-           
+          <QueryClientProvider client={queryClient}>
               <BrowserRouter>
                 <Routes />
               </BrowserRouter>
-            
+              </QueryClientProvider>
           </Loader>
         </Suspense>
        

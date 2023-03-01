@@ -13,10 +13,10 @@ const SignIn = () => {
   const navigate = useNavigate();
 
   const [userEP, setUserEP] = useState({
-    // email: "admin.gvb@yopmail.com",
-    // password: "1234567",
-    email: "",
-    password: "",
+    email: "admin.gvb@yopmail.com",
+    password: "123456",
+    // email: "",
+    // password: "",
     remember: true,
   });
 

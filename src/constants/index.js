@@ -92,6 +92,11 @@ export const ADD_MEDICATION_F = `ADD_MEDICATION_F`;
 export const DELETE_MEDICATION_S = `DELETE_MEDICATION_S`;
 export const DELETE_MEDICATION_F = `DELETE_MEDICATION_F`;
 
+export const t = `/posts`;
+
+export const t_s = `t_s`;
+export const t_f = `t_f`;
+
 // NOTE:API ENDPOINTS
 export const API_LOGIN = `auth/login`;
 export const API_FORGOT_PASSWORD = `/auth/forgotPassword`;
