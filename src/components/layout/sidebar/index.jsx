@@ -154,7 +154,7 @@ const SideBar = () => {
         collapsible
         collapsed={collapsed}
         collapsedWidth={0}
-        breakpoint="md"
+        breakpoint="sm"
       >
         <div id="main-div" className=" flex flex-col h-full bg-white">
           <Menu
